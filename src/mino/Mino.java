@@ -224,9 +224,18 @@ public class Mino {
         }
     }
     public void draw(Graphics2D g2) {
-        
+        draw(g2, false);
+    }
+    
+    public void draw(Graphics2D g2, boolean colorblindMode) {
         int margin = 2;
-        g2.setColor(b[0].c);
+        Color drawColor = b[0].c;
+        if(colorblindMode) {
+            // Convert to grayscale
+            int gray = (int)(b[0].c.getRed() * 0.299 + b[0].c.getGreen() * 0.587 + b[0].c.getBlue() * 0.114);
+            drawColor = new Color(gray, gray, gray);
+        }
+        g2.setColor(drawColor);
         g2.fillRect(b[0].x+margin, b[0].y+margin, Block.SIZE-(margin*2), Block.SIZE-(margin*2));
         g2.fillRect(b[1].x+margin, b[1].y+margin, Block.SIZE-(margin*2), Block.SIZE-(margin*2));
         g2.fillRect(b[2].x+margin, b[2].y+margin, Block.SIZE-(margin*2), Block.SIZE-(margin*2));

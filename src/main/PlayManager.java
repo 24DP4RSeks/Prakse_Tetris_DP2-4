@@ -40,6 +40,13 @@ public class PlayManager {
     // Others
     public static int dropInterval = 60; // mino drops in every 60 frames
     boolean gameOver;
+    public GameState gameState = GameState.MENU;
+    int menuSelection = 0; // Menu: 0 = Start, 1 = Settings, 2 = Exit
+    int settingsSelection = 0; // Settings: 0 = Music, 1 = Colorblind, 2 = Back
+    
+    // Settings
+    public boolean isMuted = false;
+    public boolean colorblindMode = false;
 
     // Effect
     boolean effectCounterOn;
@@ -90,7 +97,88 @@ public class PlayManager {
         return mino;
     }
     public void update() {
-
+        if(gameState == GameState.MENU) {
+            updateMenu();
+        }
+        else if(gameState == GameState.SETTINGS) {
+            updateSettings();
+        }
+        else if(gameState == GameState.PLAYING) {
+            updateGame();
+        }
+        else if(gameState == GameState.GAME_OVER) {
+            updateGameOver();
+        }
+    }
+    
+    private void updateMenu() {
+        // Handle menu navigation
+        if(KeyHandler.upPressed) {
+            menuSelection--;
+            if(menuSelection < 0) menuSelection = 2;
+            KeyHandler.upPressed = false;
+        }
+        if(KeyHandler.downPressed) {
+            menuSelection++;
+            if(menuSelection > 2) menuSelection = 0;
+            KeyHandler.downPressed = false;
+        }
+        if(KeyHandler.spacePressed) {
+            if(menuSelection == 0) {
+                startGame();
+            } else if(menuSelection == 1) {
+                gameState = GameState.SETTINGS;
+                settingsSelection = 0;
+            } else if(menuSelection == 2) {
+                System.exit(0);
+            }
+            KeyHandler.spacePressed = false;
+        }
+    }
+    
+    private void updateSettings() {
+        // Handle settings navigation
+        if(KeyHandler.upPressed) {
+            settingsSelection--;
+            if(settingsSelection < 0) settingsSelection = 2;
+            KeyHandler.upPressed = false;
+        }
+        if(KeyHandler.downPressed) {
+            settingsSelection++;
+            if(settingsSelection > 2) settingsSelection = 0;
+            KeyHandler.downPressed = false;
+        }
+        if(KeyHandler.spacePressed) {
+            if(settingsSelection == 0) {
+                // Toggle mute
+                isMuted = !isMuted;
+                if(isMuted) {
+                    GamePanel.music.stop();
+                } else {
+                    GamePanel.music.play(0, true);
+                    GamePanel.music.loop();
+                }
+            } else if(settingsSelection == 1) {
+                // Toggle colorblind mode
+                colorblindMode = !colorblindMode;
+            } else if(settingsSelection == 2) {
+                // Back to menu
+                gameState = GameState.MENU;
+                menuSelection = 0;
+            }
+            KeyHandler.spacePressed = false;
+        }
+    }
+    
+    private void updateGame() {
+        // Check if ESC pressed to return to menu
+        if(KeyHandler.menuPressed) {
+            gameState = GameState.MENU;
+            menuSelection = 0;
+            KeyHandler.menuPressed = false;
+            return;
+        }
+        
         // Check if the currentMino is active
         if(currentMino.active == false){
 
@@ -105,6 +193,7 @@ public class PlayManager {
                 // this means the currentMino immediately collided a block and couldnt move at all
                 // so its xy are the same with the nextMino
                 gameOver = true;
+                gameState = GameState.GAME_OVER;
             }
 
             currentMino.deactivating = false;
@@ -122,6 +211,33 @@ public class PlayManager {
         else {
             currentMino.update();
         }
+    }
+    
+    private void updateGameOver() {
+        if(KeyHandler.spacePressed || KeyHandler.menuPressed) {
+            resetGame();
+            gameState = GameState.MENU;
+            menuSelection = 0;
+            KeyHandler.spacePressed = false;
+            KeyHandler.menuPressed = false;
+        }
+    }
+    
+    private void startGame() {
+        gameState = GameState.PLAYING;
+        resetGame();
+    }
+    
+    private void resetGame() {
+        staticBlocks.clear();
+        level = 1;
+        lines = 0;
+        score = 0;
+        gameOver = false;
+        currentMino = pickMino();
+        currentMino.setXY(MINO_START_X, MINO_START_Y);
+        nextMino = pickMino();
+        nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
     }
     private void checkDelete() {
 
@@ -199,7 +315,102 @@ public class PlayManager {
 
     }
     public void draw(Graphics2D g2) {
-
+        if(gameState == GameState.MENU) {
+            drawMenu(g2);
+        }
+        else if(gameState == GameState.SETTINGS) {
+            drawSettings(g2);
+        }
+        else if(gameState == GameState.PLAYING) {
+            drawGame(g2);
+        }
+        else if(gameState == GameState.GAME_OVER) {
+            drawGameOver(g2);
+        }
+    }
+    
+    private void drawMenu(Graphics2D g2) {
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
+        g2.drawString("TETRIS", GamePanel.WIDTH/2 - 150, 150);
+        
+        Font menuFont = new Font("Comic Sans MS", Font.PLAIN, 30);
+        g2.setFont(menuFont);
+        
+        // Draw Start button
+        if(menuSelection == 0) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> START", GamePanel.WIDTH/2 - 80, 280);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  START", GamePanel.WIDTH/2 - 80, 280);
+        }
+        
+        // Draw Settings button
+        if(menuSelection == 1) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> SETTINGS", GamePanel.WIDTH/2 - 120, 340);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  SETTINGS", GamePanel.WIDTH/2 - 120, 340);
+        }
+        
+        // Draw Exit button
+        if(menuSelection == 2) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> EXIT", GamePanel.WIDTH/2 - 80, 400);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  EXIT", GamePanel.WIDTH/2 - 80, 400);
+        }
+        
+        g2.setColor(Color.gray);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 250, 550);
+        g2.drawString("Press F for fullscreen", GamePanel.WIDTH/2 - 100, 590);
+    }
+    
+    private void drawSettings(Graphics2D g2) {
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
+        g2.drawString("SETTINGS", GamePanel.WIDTH/2 - 180, 150);
+        
+        Font settingsFont = new Font("Comic Sans MS", Font.PLAIN, 30);
+        g2.setFont(settingsFont);
+        
+        // Draw Music button
+        if(settingsSelection == 0) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> MUSIC: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 280);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  MUSIC: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 280);
+        }
+        
+        // Draw Colorblind mode button
+        if(settingsSelection == 1) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> COLORBLIND: " + (colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 220, 340);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  COLORBLIND: " + (colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 220, 340);
+        }
+        
+        // Draw Back button
+        if(settingsSelection == 2) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> BACK", GamePanel.WIDTH/2 - 80, 400);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  BACK", GamePanel.WIDTH/2 - 80, 400);
+        }
+        
+        g2.setColor(Color.gray);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        g2.drawString("Use UP/DOWN to navigate, SPACE to toggle/select", GamePanel.WIDTH/2 - 280, 550);
+    }
+    
+    private void drawGame(Graphics2D g2) {
         // Draw Play Area Frame
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(4f));
@@ -209,13 +420,13 @@ public class PlayManager {
         int x = right_x + 100;
         int y = bottom_y - 200;
         g2.drawRect(x, y, 200, 200);
-        g2.setFont(new Font("MinecraftBold-nMK1", Font.PLAIN, 30));
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString("NEXT", x+60, y+60);
 
         // Draw Score Frame
         g2.drawRect(x, top_y + 140, 200, 200);
-        g2.setFont(new Font("MinecraftBold-nKM1", Font.PLAIN, 30));
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("SCORE", x+45,top_y + 130);
         x += 20;
         y = top_y + 180;
@@ -225,14 +436,14 @@ public class PlayManager {
 
         // Draw the currentMino
         if(currentMino != null) {
-            currentMino.draw(g2);
+            currentMino.draw(g2, colorblindMode);
         }
         // Draw the nextMino
-        nextMino.draw(g2);
+        nextMino.draw(g2, colorblindMode);
 
         // Draw Static Blocks
         for(int i = 0; i < staticBlocks.size(); i++){
-            staticBlocks.get(i).draw(g2);
+            staticBlocks.get(i).draw(g2, colorblindMode);
         }
 
         // Draw Effect
@@ -254,23 +465,48 @@ public class PlayManager {
         // Draw pause
         g2.setColor(Color.yellow);
         g2.setFont(g2.getFont().deriveFont(50f));
-        if(gameOver) {
-            x = left_x + 25;
-            y = top_y + 320;
-            g2.drawString("Game Over", x, y);
-        }
-        else if(KeyHandler.pausePressed) {
+        if(KeyHandler.pausePressed) {
             x = left_x + 70;
             y = top_y + 320;
             g2.drawString("PAUSED", x, y);
+            
+            // Show pause menu instructions
+            g2.setColor(Color.white);
+            g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            g2.drawString("Press 1 to continue", left_x + 80, top_y + 400);
+            g2.drawString("Press ESC to return to menu", left_x + 60, top_y + 430);
         }
 
         x = 35;
         y = top_y + 320;
         g2.setColor(Color.white);
-        g2.setFont(new Font(("Times New Roman"), Font.ITALIC, 60));
+        g2.setFont(new Font("Comic Sans MS", Font.ITALIC, 60));
         g2.drawString("Simple Tetris", x+20, y);
-
+    }
+    
+    private Color getColorForMode(Color c) {
+        if(colorblindMode) {
+            // Convert to grayscale
+            int gray = (int)(c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114);
+            return new Color(gray, gray, gray);
+        }
+        return c;
+    }
+    
+    private void drawGameOver(Graphics2D g2) {
+        drawGame(g2);
+        g2.setColor(new Color(0, 0, 0, 200));
+        g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
+        
+        g2.setColor(Color.red);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 60));
+        g2.drawString("GAME OVER", GamePanel.WIDTH/2 - 200, 250);
+        
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
+        g2.drawString("Score: " + score, GamePanel.WIDTH/2 - 80, 350);
+        g2.drawString("Press SPACE to return to menu", GamePanel.WIDTH/2 - 200, 450);
+        g2.drawString("or ESC", GamePanel.WIDTH/2 - 40, 500);
     }
 
     

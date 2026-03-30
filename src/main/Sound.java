@@ -16,7 +16,7 @@ public class Sound {
 
     public Sound() {
 
-        url[0] = getClass().getResource("/res/melody.wav");
+        url[0] = getClass().getResource("/res/gameOver_sound.wav");
         url[1] = getClass().getResource("/res/lines_sound.wav");
         url[2] = getClass().getResource("/res/gameOver_sound.wav");
         url[3] = getClass().getResource("/res/rotation_sound.wav");

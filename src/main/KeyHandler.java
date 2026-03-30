@@ -6,7 +6,12 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener{
 
-    public static boolean spacePressed, downPressed, leftPressed, rightPressed, pausePressed;
+    public static boolean spacePressed, leftPressed, rightPressed, pausePressed;
+
+    public static boolean upPressed;
+    public static boolean downPressed;
+    public static boolean menuPressed;
+    public static boolean fullscreenPressed;
     
     @Override
     public void keyTyped(KeyEvent e) {}
@@ -15,6 +20,12 @@ public class KeyHandler implements KeyListener{
     public void keyPressed(KeyEvent e) {
         
         int code = e.getKeyCode();
+        if(code == KeyEvent.VK_UP || code == KeyEvent.VK_W){
+        upPressed = true;
+        }
+        if(code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S){
+            downPressed = true;
+}
 
         if(code == KeyEvent.VK_SPACE){
             spacePressed = true;
@@ -36,6 +47,12 @@ public class KeyHandler implements KeyListener{
             else {
                 pausePressed = true;
             }
+        }
+        if(code == KeyEvent.VK_ESCAPE){
+            menuPressed = true;
+        }
+        if(code == KeyEvent.VK_F){
+            fullscreenPressed = true;
         }
     }
 

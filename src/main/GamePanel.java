@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
@@ -14,7 +15,10 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     PlayManager pm;
     public static Sound music = new Sound();
-    public static Sound se = new Sound(); 
+    public static Sound se = new Sound();
+    
+    private float scaleX = 1.0f;
+    private float scaleY = 1.0f;
 
     public GamePanel() {
 
@@ -61,16 +65,50 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
     private void update() {
-
-        if(KeyHandler.pausePressed == false && pm.gameOver == false) {
-            pm.update();
+        // Handle fullscreen toggle
+        if(KeyHandler.fullscreenPressed) {
+            Main.toggleFullscreen();
+            KeyHandler.fullscreenPressed = false;
         }
         
+        // Handle ESC to return to menu even when paused
+        if(KeyHandler.menuPressed && pm.gameState == GameState.PLAYING) {
+            pm.gameState = GameState.MENU;
+            pm.menuSelection = 0;
+            KeyHandler.menuPressed = false;
+            KeyHandler.pausePressed = false;
+            return;
+        }
+        
+        if(pm.gameState == GameState.MENU) {
+            pm.update();  // Menu always updates for navigation
+        }
+        else if(pm.gameState == GameState.SETTINGS) {
+            pm.update();  // Settings menu updates for navigation
+        }
+        else if(pm.gameState == GameState.PLAYING) {
+            if(KeyHandler.pausePressed == false) {
+                pm.update();  // Only update when not paused
+            }
+        }
+        else if(pm.gameState == GameState.GAME_OVER) {
+            pm.update();  // Game Over state updates for input
+        }
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
+        
+        // Calculate scaling based on current panel size
+        scaleX = (float)this.getWidth() / WIDTH;
+        scaleY = (float)this.getHeight() / HEIGHT;
+        
+        // Apply scaling transformation
+        AffineTransform transform = new AffineTransform();
+        transform.scale(scaleX, scaleY);
+        g2.transform(transform);
+        
         pm.draw(g2);
     }
 }
