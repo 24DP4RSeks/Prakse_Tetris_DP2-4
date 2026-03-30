@@ -26,6 +26,6 @@ public class Block extends Rectangle{
             drawColor = new Color(gray, gray, gray);
         }
         g2.setColor(drawColor);
-        g2.fillRect(x+margine, y+margine, SIZE-(margine*2), SIZE-(margine*2));
+        g2.fillRoundRect(x+margine, y+margine, SIZE-(margine*2), SIZE-(margine*2), 8, 8);
     }
 }

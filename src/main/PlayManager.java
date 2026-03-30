@@ -453,18 +453,33 @@ public class PlayManager {
         // Draw Play Area Frame
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(4f));
-        g2.drawRect(left_x-4, top_y, WIDTH+8, HEIGHT+8);
+        g2.drawRoundRect(left_x-4, top_y, WIDTH+8, HEIGHT+8, 15, 15);
 
+        // Draw faint grid lines for navigation
+        g2.setColor(new Color(100, 100, 100, 50));  // Dark gray, semi-transparent
+        g2.setStroke(new BasicStroke(1f));
+        
+        // Draw vertical grid lines
+        for(int x = left_x; x <= right_x; x += Block.SIZE) {
+            g2.drawLine(x, top_y, x, bottom_y);
+        }
+        
+        // Draw horizontal grid lines
+        for(int y = top_y; y <= bottom_y; y += Block.SIZE) {
+            g2.drawLine(left_x, y, right_x, y);
+        }
+
+        g2.setColor(Color.white);
         // Draw Next Mino Frame
         int x = right_x + 100;
         int y = bottom_y - 200;
-        g2.drawRect(x, y, 200, 200);
+        g2.drawRoundRect(x, y, 200, 200, 15, 15);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString("NEXT", x+60, y+60);
 
         // Draw Score Frame
-        g2.drawRect(x, top_y + 140, 200, 200);
+        g2.drawRoundRect(x, top_y + 140, 200, 200, 15, 15);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("SCORE", x+45,top_y + 130);
         x += 20;
