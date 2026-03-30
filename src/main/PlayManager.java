@@ -255,6 +255,7 @@ public class PlayManager {
         lines = 0;
         score = 0;
         gameOver = false;
+        dropInterval = 60;  // Reset to initial speed
         currentMino = pickMino();
         currentMino.setXY(MINO_START_X, MINO_START_Y);
         nextMino = pickMino();
