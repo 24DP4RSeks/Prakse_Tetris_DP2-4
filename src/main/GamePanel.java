@@ -37,7 +37,8 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
 
-        music.play(0, true);
+        // Play the selected music theme
+        music.play(5 + pm.currentMusicTheme, true);
         music.loop();
     }
 

@@ -47,6 +47,7 @@ public class PlayManager {
     // Settings
     public boolean isMuted = false;
     public boolean colorblindMode = false;
+    public int currentMusicTheme = 0;  // 0 = Theme 1, 1 = Theme 2, 2 = Theme 3
 
     // Effect
     boolean effectCounterOn;
@@ -140,12 +141,12 @@ public class PlayManager {
         // Handle settings navigation
         if(KeyHandler.upPressed) {
             settingsSelection--;
-            if(settingsSelection < 0) settingsSelection = 2;
+            if(settingsSelection < 0) settingsSelection = 3;
             KeyHandler.upPressed = false;
         }
         if(KeyHandler.downPressed) {
             settingsSelection++;
-            if(settingsSelection > 2) settingsSelection = 0;
+            if(settingsSelection > 3) settingsSelection = 0;
             KeyHandler.downPressed = false;
         }
         if(KeyHandler.spacePressed) {
@@ -155,13 +156,23 @@ public class PlayManager {
                 if(isMuted) {
                     GamePanel.music.stop();
                 } else {
-                    GamePanel.music.play(0, true);
+                    // Play current selected theme
+                    GamePanel.music.play(5 + currentMusicTheme, true);
                     GamePanel.music.loop();
                 }
             } else if(settingsSelection == 1) {
+                // Switch music theme (right now cycling through 3)
+                currentMusicTheme = (currentMusicTheme + 1) % 4;
+                // Restart music with new theme if music is on
+                if(!isMuted) {
+                    GamePanel.music.stop();
+                    GamePanel.music.play(5 + currentMusicTheme, true);
+                    GamePanel.music.loop();
+                }
+            } else if(settingsSelection == 2) {
                 // Toggle colorblind mode
                 colorblindMode = !colorblindMode;
-            } else if(settingsSelection == 2) {
+            } else if(settingsSelection == 3) {
                 // Back to menu
                 gameState = GameState.MENU;
                 menuSelection = 0;
@@ -171,6 +182,13 @@ public class PlayManager {
     }
     
     private void updateGame() {
+        // Check if R pressed to restart game
+        if(KeyHandler.restartPressed) {
+            resetGame();
+            KeyHandler.restartPressed = false;
+            return;
+        }
+        
         // Check if ESC pressed to return to menu
         if(KeyHandler.menuPressed) {
             gameState = GameState.MENU;
@@ -378,6 +396,7 @@ public class PlayManager {
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
         g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 250, 550);
         g2.drawString("Press F for fullscreen", GamePanel.WIDTH/2 - 100, 590);
+        g2.drawString("Press R during game to restart", GamePanel.WIDTH/2 - 140, 630);
     }
     
     private void drawSettings(Graphics2D g2) {
@@ -388,17 +407,26 @@ public class PlayManager {
         Font settingsFont = new Font("Comic Sans MS", Font.PLAIN, 30);
         g2.setFont(settingsFont);
         
-        // Draw Music button
+        // Draw Music button (Mute/Unmute)
         if(settingsSelection == 0) {
             g2.setColor(Color.yellow);
-            g2.drawString("> MUSIC: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 280);
+            g2.drawString("> MUSIC: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 260);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  MUSIC: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 280);
+            g2.drawString("  MUSIC: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 260);
+        }
+        
+        // Draw Music Theme button
+        if(settingsSelection == 1) {
+            g2.setColor(Color.yellow);
+            g2.drawString("> THEME: " + (currentMusicTheme + 1), GamePanel.WIDTH/2 - 150, 300);
+        } else {
+            g2.setColor(Color.white);
+            g2.drawString("  THEME: " + (currentMusicTheme + 1), GamePanel.WIDTH/2 - 150, 300);
         }
         
         // Draw Colorblind mode button
-        if(settingsSelection == 1) {
+        if(settingsSelection == 2) {
             g2.setColor(Color.yellow);
             g2.drawString("> COLORBLIND: " + (colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 220, 340);
         } else {
@@ -407,12 +435,12 @@ public class PlayManager {
         }
         
         // Draw Back button
-        if(settingsSelection == 2) {
+        if(settingsSelection == 3) {
             g2.setColor(Color.yellow);
-            g2.drawString("> BACK", GamePanel.WIDTH/2 - 80, 400);
+            g2.drawString("> BACK", GamePanel.WIDTH/2 - 80, 380);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  BACK", GamePanel.WIDTH/2 - 80, 400);
+            g2.drawString("  BACK", GamePanel.WIDTH/2 - 80, 380);
         }
         
         g2.setColor(Color.gray);

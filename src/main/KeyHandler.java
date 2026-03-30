@@ -12,6 +12,7 @@ public class KeyHandler implements KeyListener{
     public static boolean downPressed;
     public static boolean menuPressed;
     public static boolean fullscreenPressed;
+    public static boolean restartPressed;
     
     @Override
     public void keyTyped(KeyEvent e) {}
@@ -53,6 +54,9 @@ public class KeyHandler implements KeyListener{
         }
         if(code == KeyEvent.VK_F){
             fullscreenPressed = true;
+        }
+        if(code == KeyEvent.VK_R){
+            restartPressed = true;
         }
     }
 
