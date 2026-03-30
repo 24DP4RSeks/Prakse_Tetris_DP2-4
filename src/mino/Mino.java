@@ -150,6 +150,8 @@ public class Mino {
                 case 3: getDirection4();break;
                 case 4: getDirection1();break;
             }
+            // Play rotation sound
+            main.GamePanel.se.play(3, false);
             KeyHandler.spacePressed = false;
         }
 

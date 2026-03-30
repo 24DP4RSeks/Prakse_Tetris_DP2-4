@@ -187,6 +187,9 @@ public class PlayManager {
             staticBlocks.add(currentMino.b[1]);
             staticBlocks.add(currentMino.b[2]);
             staticBlocks.add(currentMino.b[3]);
+            
+            // Play block hit sound
+            GamePanel.se.play(4, false);
 
             //check if the game is over
             if(currentMino.b[0].x == MINO_START_X && currentMino.b[0].y == MINO_START_Y){
@@ -276,19 +279,6 @@ public class PlayManager {
 
                     lineCount++;
                     lines++;
-                    // Drop speed
-                    // if the score gits a certain number, increase the drop speed
-                    // 1 is the fastest
-                    if(lines % 10 == 10 && dropInterval > 1){
-
-                        level++;
-                        if(dropInterval > 10){
-                            dropInterval += 10;
-                        }
-                        else {
-                            dropInterval -=1;
-                        }
-                    }
 
                     // a line has been deleted so need to slide down blocks that are shove it
                     for(int i = 0; i < staticBlocks.size(); i++){
@@ -308,11 +298,31 @@ public class PlayManager {
 
         // Add Score
         if(lineCount > 0){
+            // Play line delete sound
+            GamePanel.se.play(1, false);
+            
             int singleLineScore = 10 * level;
             score +=  singleLineScore + lineCount;
+            
+            // Update difficulty based on score
+            updateDifficulty();
         }
 
 
+    }
+    
+    private void updateDifficulty() {
+        // Speed up drop interval every 100 points
+        // Every 100 score: decrease dropInterval by 5 frames (speeds up)
+        // Minimum dropInterval is 10 frames to avoid making it too fast
+        int scoreThreshold = (score / 100) * 100; // Get current score threshold
+        int difficultyLevel = score / 100;
+        
+        // Start with 60, subtract (5 * difficultyLevel) but never go below 10
+        dropInterval = Math.max(10, 60 - (difficultyLevel * 5));
+        
+        // Update level based on score milestones too
+        level = 1 + (score / 100);
     }
     public void draw(Graphics2D g2) {
         if(gameState == GameState.MENU) {
