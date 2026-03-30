@@ -126,7 +126,7 @@ public class Mino {
             }
             // check left
             for(int ii = 0; ii < b.length; ii++) {
-                if(b[ii].x - Block.SIZE == targetY && b[ii].y == targetY){
+                if(b[ii].x - Block.SIZE == targetX && b[ii].y == targetY){
                     leftCollision = true;
                 }
             }

@@ -5,7 +5,7 @@ import java.awt.Color;
 public class Mino_Square  extends Mino{
 
     public Mino_Square() {
-        create(Color.yellow);
+        create(Color.white);
     }
 
     public void setXY(int x, int y) {
