@@ -13,7 +13,7 @@ public class GameOverManager {
 
     public void update() {
         if(KeyHandler.spacePressed || KeyHandler.menuPressed) {
-            pm.resetGame();
+            GameResetManager.resetGame(pm);
             pm.gameState = GameState.MENU;
             pm.menuSelection = 0;
             KeyHandler.spacePressed = false;
@@ -22,7 +22,7 @@ public class GameOverManager {
     }
 
     public void draw(Graphics2D g2) {
-        pm.drawGame(g2);
+        GameRenderer.drawGame(pm, g2);
         g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         

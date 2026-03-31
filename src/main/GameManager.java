@@ -30,7 +30,7 @@ public class GameManager {
         
         // Check if R pressed to restart game
         if(KeyHandler.restartPressed) {
-            pm.resetGame();
+            GameResetManager.resetGame(pm);
             KeyHandler.restartPressed = false;
             return;
         }
@@ -68,11 +68,11 @@ public class GameManager {
             // replace the currentMino with the nextMino
             pm.currentMino = pm.nextMino;
             pm.currentMino.setXY(pm.MINO_START_X, pm.MINO_START_Y);
-            pm.nextMino = pm.pickMino();
+            pm.nextMino = MinoFactory.pickMino();
             pm.nextMino.setXY(pm.NEXTMINO_X, pm.NEXTMINO_Y);
 
             // When line is full = delete line
-            pm.checkDelete();
+            LineClearManager.checkDelete(pm);
 
         }
         else {

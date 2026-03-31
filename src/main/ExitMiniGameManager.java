@@ -52,7 +52,7 @@ public class ExitMiniGameManager {
 
     public void draw(Graphics2D g2) {
         // Draw the game in background
-        pm.drawGame(g2);
+        GameRenderer.drawGame(pm, g2);
         
         // Semi-transparent overlay
         g2.setColor(new Color(0, 0, 0, 150));
