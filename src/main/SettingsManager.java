@@ -57,57 +57,51 @@ public class SettingsManager {
 
     public void draw(Graphics2D g2) {
         g2.setColor(Color.white);
-        g2.setFont(new Font("Arial", Font.BOLD, 40));
-        g2.drawString("SETTINGS", GamePanel.WIDTH/2 - 120, 120);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
+        g2.drawString("SETTINGS", GamePanel.WIDTH/2 - 180, 150);
         
-        Font settingsFont = new Font("Arial", Font.PLAIN, 25);
+        Font settingsFont = new Font("Comic Sans MS", Font.PLAIN, 30);
         g2.setFont(settingsFont);
         
-        int optionY = 200;
-        int spacing = 40;
-        
-        // Draw Music toggle
+        // Draw Music button (Mute/Unmute)
         if(pm.settingsSelection == 0) {
             g2.setColor(Color.yellow);
-            g2.drawString("> Music: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("> MUSIC: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 260);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  Music: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("  MUSIC: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, 260);
         }
         
-        optionY += spacing;
-        // Draw Music theme
+        // Draw Music Theme button
         if(pm.settingsSelection == 1) {
             g2.setColor(Color.yellow);
-            g2.drawString("> Theme: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("> THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 150, 300);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  Theme: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("  THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 150, 300);
         }
         
-        optionY += spacing;
-        // Draw Colorblind mode
+        // Draw Colorblind mode button
         if(pm.settingsSelection == 2) {
             g2.setColor(Color.yellow);
-            g2.drawString("> Colorblind: " + (pm.colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("> COLORBLIND: " + (pm.colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 220, 340);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  Colorblind: " + (pm.colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("  COLORBLIND: " + (pm.colorblindMode ? "ON" : "OFF"), GamePanel.WIDTH/2 - 220, 340);
         }
         
-        optionY += spacing;
-        // Draw Back
+        // Draw Back button
         if(pm.settingsSelection == 3) {
             g2.setColor(Color.yellow);
-            g2.drawString("> BACK", GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("> BACK", GamePanel.WIDTH/2 - 80, 380);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  BACK", GamePanel.WIDTH/2 - 120, optionY);
+            g2.drawString("  BACK", GamePanel.WIDTH/2 - 80, 380);
         }
         
-        // Draw instructions
         g2.setColor(Color.gray);
-        g2.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2.drawString("Use UP/DOWN to navigate, E to select", GamePanel.WIDTH/2 - 220, optionY + 50);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        g2.drawString("Use W/UP or S/DOWN to navigate, E to toggle/select", GamePanel.WIDTH/2 - 280, 550);
+
     }
 }

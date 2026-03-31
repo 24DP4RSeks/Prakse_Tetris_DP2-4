@@ -96,9 +96,9 @@ public class GameManager {
         }
         
         // Selection with SPACE or ENTER
-        if(KeyHandler.spacePressed) {
+        if(KeyHandler.ePressed) {
             executePauseMenuSelection();
-            KeyHandler.spacePressed = false;
+            KeyHandler.ePressed = false;
         }
     }
 
@@ -191,10 +191,10 @@ public class GameManager {
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         
         g2.setColor(Color.white);
-        g2.setFont(new Font("Arial", Font.BOLD, 40));
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
         g2.drawString("PAUSED", GamePanel.WIDTH/2 - 100, 200);
         
-        Font pauseFont = new Font("Arial", Font.PLAIN, 30);
+        Font pauseFont = new Font("Comic Sans MS", Font.PLAIN, 30);
         g2.setFont(pauseFont);
         
         int menuY = 300;
@@ -205,30 +205,30 @@ public class GameManager {
         // Draw Resume
         if(pm.pauseMenuSelection == 0) {
             g2.setColor(Color.yellow);
-            g2.drawString("> RESUME", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("> RESUME", GamePanel.WIDTH/2 - 100, optionY);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  RESUME", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("  RESUME", GamePanel.WIDTH/2 - 100, optionY);
         }
         
         optionY += spacing;
         // Draw Sound toggle
         if(pm.pauseMenuSelection == 1) {
             g2.setColor(Color.yellow);
-            g2.drawString("> SOUND: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("> SOUND: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 100, optionY);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  SOUND: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("  SOUND: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 100, optionY);
         }
         
         optionY += spacing;
         // Draw Theme
         if(pm.pauseMenuSelection == 2) {
             g2.setColor(Color.yellow);
-            g2.drawString("> THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("> THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 100, optionY);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("  THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 100, optionY);
         }
         
         optionY += spacing;
@@ -243,7 +243,7 @@ public class GameManager {
         
         // Draw instructions
         g2.setColor(Color.gray);
-        g2.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 220, menuY + menuHeight - 20);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 150, menuY + menuHeight);
     }
 }

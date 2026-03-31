@@ -33,7 +33,7 @@ public class ExitMiniGameManager {
         }
         
         // Confirm
-        if(KeyHandler.spacePressed) {
+        if(KeyHandler.ePressed) {
             if(pm.confirmSelection == 0) {
                 // No, return to pause menu
                 pm.gameState = GameState.PLAYING;
@@ -46,7 +46,7 @@ public class ExitMiniGameManager {
                 pm.isPaused = false;
                 pm.pauseMenuSelection = 0;
             }
-            KeyHandler.spacePressed = false;
+            KeyHandler.ePressed = false;
         }
     }
 
@@ -59,48 +59,50 @@ public class ExitMiniGameManager {
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         
         // Main box
-        int boxWidth = 400;
-        int boxHeight = 200;
-        int boxX = GamePanel.WIDTH/2 - boxWidth/2;
-        int boxY = GamePanel.HEIGHT/2 - boxHeight/2;
+        int menuX = GamePanel.WIDTH/2 - 250;
+        int menuY = GamePanel.HEIGHT/2 - 200;
+        int menuWidth = 500;
+        int menuHeight = 400;
         
-        g2.setColor(new Color(50, 50, 50, 220));
-        g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20);
+        g2.setColor(Color.black);
+        g2.fillRoundRect(menuX, menuY + 50, menuWidth, menuHeight / 2, 20, 20);
+
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20);
+        g2.drawRoundRect(menuX, menuY + 50, menuWidth, menuHeight / 2, 20, 20);
         
         // Title
         g2.setColor(Color.white);
-        g2.setFont(new Font("Arial", Font.BOLD, 30));
-        g2.drawString("Are you sure you want to leave?", boxX + 20, boxY + 50);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
+        g2.drawString("You sure?", menuX + menuWidth / 2 / 2 + 30, menuY + 100);
         
         // No button
         int buttonWidth = 80;
         int buttonHeight = 40;
-        int noX = boxX + 50;
-        int buttonY = boxY + 100;
+        int noX = menuX + 50;
+        int buttonY = menuY + 100;
         
         if(pm.confirmSelection == 0) {
             g2.setColor(Color.yellow);
         } else {
             g2.setColor(Color.white);
         }
-        g2.drawString("No", noX + 20, buttonY + 25);
+        g2.drawString("No", noX + 20, buttonY + 75);
         
         // Yes button
-        int yesX = boxX + boxWidth - 50 - buttonWidth;
+        int yesX = menuX + menuWidth - 50 - buttonWidth;
         
         if(pm.confirmSelection == 1) {
             g2.setColor(Color.yellow);
         } else {
             g2.setColor(Color.white);
         }
-        g2.drawString("Yes", yesX + 20, buttonY + 25);
+        g2.drawString("Yes", yesX + 20, buttonY + 75);
         
         // Instructions
-        g2.setColor(Color.gray);
-        g2.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2.drawString("Use LEFT/RIGHT to select, SPACE to confirm", boxX + 20, boxY + boxHeight - 20);
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        g2.drawString("Use A/D to select, E to confirm", menuX + menuX / 2 - 60, menuHeight);
+
     }
 }

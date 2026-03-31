@@ -27,13 +27,12 @@ public class GameOverManager {
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         
         g2.setColor(Color.red);
-        g2.setFont(new Font("Arial", Font.BOLD, 60));
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 60));
         g2.drawString("GAME OVER", GamePanel.WIDTH/2 - 200, 250);
         
         g2.setColor(Color.white);
-        g2.setFont(new Font("Arial", Font.PLAIN, 30));
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("Score: " + pm.score, GamePanel.WIDTH/2 - 80, 350);
         g2.drawString("Press SPACE to return to menu", GamePanel.WIDTH/2 - 200, 450);
-        g2.drawString("or ESC", GamePanel.WIDTH/2 - 40, 500);
     }
 }

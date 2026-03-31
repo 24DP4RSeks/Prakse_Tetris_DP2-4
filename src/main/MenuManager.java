@@ -38,47 +38,48 @@ public class MenuManager {
 
     public void draw(Graphics2D g2) {
         g2.setColor(Color.white);
-        g2.setFont(new Font("Arial", Font.BOLD, 50));
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
         g2.drawString("TETRIS", GamePanel.WIDTH/2 - 150, 150);
         
-        Font menuFont = new Font("Arial", Font.PLAIN, 30);
+        Font menuFont = new Font("Comic Sans MS", Font.PLAIN, 30);
         g2.setFont(menuFont);
-        
-        int optionY = 250;
-        int spacing = 50;
         
         // Draw Start button
         if(pm.menuSelection == 0) {
             g2.setColor(Color.yellow);
-            g2.drawString("> START", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("> START", GamePanel.WIDTH/2 - 80, 280);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  START", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("  START", GamePanel.WIDTH/2 - 80, 280);
         }
         
-        optionY += spacing;
         // Draw Settings button
         if(pm.menuSelection == 1) {
             g2.setColor(Color.yellow);
-            g2.drawString("> SETTINGS", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("> SETTINGS", GamePanel.WIDTH/2 - 120, 340);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  SETTINGS", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("  SETTINGS", GamePanel.WIDTH/2 - 120, 340);
         }
         
-        optionY += spacing;
         // Draw Exit button
         if(pm.menuSelection == 2) {
             g2.setColor(Color.yellow);
-            g2.drawString("> EXIT", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("> EXIT", GamePanel.WIDTH/2 - 80, 400);
         } else {
             g2.setColor(Color.white);
-            g2.drawString("  EXIT", GamePanel.WIDTH/2 - 80, optionY);
+            g2.drawString("  EXIT", GamePanel.WIDTH/2 - 80, 400);
         }
         
-        // Draw instructions
         g2.setColor(Color.gray);
-        g2.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2.drawString("Use UP/DOWN to navigate, E to select", GamePanel.WIDTH/2 - 220, optionY + 50);
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        g2.drawString("Use W/UP or S/DOWN to navigate, E to select", GamePanel.WIDTH/2 - 250, 550);
+        g2.drawString("Press F for fullscreen", GamePanel.WIDTH/2 - 100, 590);
+        g2.drawString("Press R during game to restart", GamePanel.WIDTH/2 - 140, 630);
+        
+        // Draw title
+        g2.setColor(new Color(150, 150, 150));
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        g2.drawString("Simple Tetris Game", GamePanel.WIDTH/2 - 80, GamePanel.HEIGHT - 20);
     }
 }
