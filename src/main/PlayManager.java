@@ -30,23 +30,30 @@ public class PlayManager {
     public static int bottom_y;
 
     // Mino
-    Mino currentMino;
-    final int MINO_START_X;
-    final int MINO_START_Y;
-    Mino nextMino;
-    final int NEXTMINO_X;
-    final int NEXTMINO_Y;
+    public Mino currentMino;
+    public final int MINO_START_X;
+    public final int MINO_START_Y;
+    public Mino nextMino;
+    public final int NEXTMINO_X;
+    public final int NEXTMINO_Y;
     public static ArrayList<Block> staticBlocks = new ArrayList<>();
 
     // Others
     public static int dropInterval = 60; // mino drops in every 60 frames
-    boolean gameOver;
-    boolean isPaused = false;  // Dedicated pause state (different from pausePressed toggle)
+    public boolean gameOver;
+    public boolean isPaused = false;  // Dedicated pause state (different from pausePressed toggle)
     public GameState gameState = GameState.MENU;
-    int menuSelection = 0; // Menu: 0 = Start, 1 = Settings, 2 = Exit
-    int settingsSelection = 0; // Settings: 0 = Music, 1 = Colorblind, 2 = Back
-    int pauseMenuSelection = 0; // Pause Menu: 0 = Resume, 1 = Sound, 2 = Settings, 3 = Menu
-    int confirmSelection = 0; // Confirm: 0 = No, 1 = Yes
+    public int menuSelection = 0; // Menu: 0 = Start, 1 = Settings, 2 = Exit
+    public int settingsSelection = 0; // Settings: 0 = Music, 1 = Colorblind, 2 = Back
+    public int pauseMenuSelection = 0; // Pause Menu: 0 = Resume, 1 = Sound, 2 = Settings, 3 = Menu
+    public int confirmSelection = 0; // Confirm: 0 = No, 1 = Yes
+    
+    // Managers
+    private MenuManager menuManager;
+    private SettingsManager settingsManager;
+    private GameManager gameManager;
+    private GameOverManager gameOverManager;
+    private ExitMiniGameManager exitMiniGameManager;
     
     // Settings
     public boolean isMuted = false;
@@ -68,9 +75,9 @@ public class PlayManager {
     // Exit Mini Game
 
     // Score
-    int level = 1;
-    int lines;
-    int score;
+    public int level = 1;
+    public int lines;
+    public int score;
 
     public PlayManager() {
 
@@ -92,8 +99,14 @@ public class PlayManager {
         nextMino = pickMino();
         nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
 
+        // Initialize managers
+        menuManager = new MenuManager(this);
+        settingsManager = new SettingsManager(this);
+        gameManager = new GameManager(this);
+        gameOverManager = new GameOverManager(this);
+        exitMiniGameManager = new ExitMiniGameManager(this);
     }
-    private Mino pickMino() {
+    public Mino pickMino() {
 
         // Pick random mino
         Mino mino = null;
@@ -112,19 +125,19 @@ public class PlayManager {
     }
     public void update() {
         if(gameState == GameState.MENU) {
-            updateMenu();
+            menuManager.update();
         }
         else if(gameState == GameState.SETTINGS) {
-            updateSettings();
+            settingsManager.update();
         }
         else if(gameState == GameState.PLAYING) {
-            updateGame();
+            gameManager.update();
         }
         else if(gameState == GameState.GAME_OVER) {
-            updateGameOver();
+            gameOverManager.update();
         }
         else if(gameState == GameState.EXIT_MINI_GAME) {
-            updateExitMiniGame();
+            exitMiniGameManager.update();
         }
     }
     
@@ -278,7 +291,7 @@ public class PlayManager {
         }
     }
     
-    private void startGame() {
+    public void startGame() {
         gameState = GameState.PLAYING;
         resetGame();
     }
@@ -369,7 +382,7 @@ public class PlayManager {
         }
     }
     
-    private void resetGame() {
+    public void resetGame() {
         staticBlocks.clear();
         level = 1;
         lines = 0;
@@ -387,7 +400,7 @@ public class PlayManager {
         nextMino = pickMino();
         nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
     }
-    private void checkDelete() {
+    public void checkDelete() {
 
         int x = left_x;
         int y = top_y;
@@ -509,19 +522,19 @@ public class PlayManager {
     }
     public void draw(Graphics2D g2) {
         if(gameState == GameState.MENU) {
-            drawMenu(g2);
+            menuManager.draw(g2);
         }
         else if(gameState == GameState.SETTINGS) {
-            drawSettings(g2);
+            settingsManager.draw(g2);
         }
         else if(gameState == GameState.PLAYING) {
-            drawGame(g2);
+            gameManager.draw(g2);
         }
         else if(gameState == GameState.GAME_OVER) {
-            drawGameOver(g2);
+            gameOverManager.draw(g2);
         }
         else if(gameState == GameState.EXIT_MINI_GAME) {
-            drawExitMiniGame(g2);
+            exitMiniGameManager.draw(g2);
         }
     }
     
@@ -621,7 +634,7 @@ public class PlayManager {
         g2.drawString("Use W/UP or S/DOWN to navigate, E to toggle/select", GamePanel.WIDTH/2 - 280, 550);
     }
     
-    private void drawGame(Graphics2D g2) {
+    public void drawGame(Graphics2D g2) {
         // Draw Play Area Frame
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(4f));
