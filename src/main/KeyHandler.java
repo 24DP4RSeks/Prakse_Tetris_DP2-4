@@ -61,6 +61,11 @@ public class KeyHandler implements KeyListener{
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        int code = e.getKeyCode();
+        if(code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER){
+            spacePressed = false;
+        }
+    }
 
 }

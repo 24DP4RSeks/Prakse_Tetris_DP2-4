@@ -64,6 +64,11 @@ public class PlayManager {
     long lastLinesClearedTime = 0;
     final long COMBO_TIMEOUT = 2000; // 2 seconds to maintain combo
 
+    // Exit Mini Game
+    boolean exitButtonHeld = false;
+    int exitHoldFrames = 0;
+    final int EXIT_HOLD_FRAMES = 60; // 1 second for testing
+
     // Score
     int level = 1;
     int lines;
@@ -119,6 +124,9 @@ public class PlayManager {
         }
         else if(gameState == GameState.GAME_OVER) {
             updateGameOver();
+        }
+        else if(gameState == GameState.EXIT_MINI_GAME) {
+            updateExitMiniGame();
         }
     }
     
@@ -318,11 +326,48 @@ public class PlayManager {
                 GamePanel.music.loop();
             }
         } else if(pauseMenuSelection == 3) {
-            // Return to menu
-            gameState = GameState.MENU;
-            menuSelection = 0;
-            isPaused = false;
-            pauseMenuSelection = 0;
+            // Exit mini game
+            gameState = GameState.EXIT_MINI_GAME;
+            exitButtonHeld = false;
+            exitHoldFrames = 0;
+            KeyHandler.spacePressed = false; // Reset the space press used to select this option
+        }
+    }
+    
+    private void updateExitMiniGame() {
+        // Check for ESC to cancel
+        if(KeyHandler.menuPressed) {
+            gameState = GameState.PLAYING; // Return to pause menu
+            KeyHandler.menuPressed = false;
+            exitButtonHeld = false;
+            exitHoldFrames = 0;
+            GamePanel.se.stop();
+            return;
+        }
+        
+        if(KeyHandler.spacePressed) {
+            if(!exitButtonHeld) {
+                exitButtonHeld = true;
+                exitHoldFrames = 0;
+                // Play crying sound or sad music
+                GamePanel.se.play(4, true); // Using block hit sound as crying for now
+            }
+            exitHoldFrames++;
+            if(exitHoldFrames >= EXIT_HOLD_FRAMES) {
+                // Successfully held for 5 seconds, exit to menu
+                gameState = GameState.MENU;
+                menuSelection = 0;
+                isPaused = false;
+                pauseMenuSelection = 0;
+                exitButtonHeld = false;
+                exitHoldFrames = 0;
+                KeyHandler.spacePressed = false;
+                GamePanel.se.stop(); // Stop the sound
+            }
+        } else {
+            exitButtonHeld = false;
+            exitHoldFrames = 0;
+            GamePanel.se.stop(); // Stop sound if released early
         }
     }
     
@@ -337,6 +382,8 @@ public class PlayManager {
         lastLinesClearedTime = 0;
         isPaused = false;
         pauseMenuSelection = 0;
+        exitButtonHeld = false;
+        exitHoldFrames = 0;
         gameOver = false;
         dropInterval = 60;  // Reset to initial speed
         currentMino = pickMino();
@@ -476,6 +523,9 @@ public class PlayManager {
         }
         else if(gameState == GameState.GAME_OVER) {
             drawGameOver(g2);
+        }
+        else if(gameState == GameState.EXIT_MINI_GAME) {
+            drawExitMiniGame(g2);
         }
     }
     
@@ -697,15 +747,15 @@ public class PlayManager {
             int menuWidth = 500;
             int menuHeight = 400;
             
-            g2.setColor(new Color(30, 30, 50, 255));
+            g2.setColor(Color.black);
             g2.fillRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
             
-            g2.setColor(Color.yellow);
+            g2.setColor(Color.white);
             g2.setStroke(new BasicStroke(3f));
             g2.drawRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
             
             // Draw title
-            g2.setColor(Color.yellow);
+            g2.setColor(Color.white);
             g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
             g2.drawString("PAUSED", GamePanel.WIDTH/2 - 130, menuY + 70);
             
@@ -729,10 +779,10 @@ public class PlayManager {
             optionY += lineHeight;
             if(pauseMenuSelection == 1) {
                 g2.setColor(Color.yellow);
-                g2.drawString("> SOUND: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, optionY);
+                g2.drawString("> Music: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 130, optionY);
             } else {
                 g2.setColor(Color.white);
-                g2.drawString("  SOUND: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, optionY);
+                g2.drawString("  Music: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 130, optionY);
             }
             
             // Theme option
@@ -786,6 +836,80 @@ public class PlayManager {
         g2.drawString("Press SPACE to return to menu", GamePanel.WIDTH/2 - 200, 450);
         g2.drawString("or ESC", GamePanel.WIDTH/2 - 40, 500);
     }
-
+    
+    private void drawExitMiniGame(Graphics2D g2) {
+        // Draw the game in background
+        drawGame(g2);
+        
+        // Semi-transparent overlay
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
+        
+        // Main box
+        int boxWidth = 400;
+        int boxHeight = 200;
+        int boxX = GamePanel.WIDTH/2 - boxWidth/2;
+        int boxY = GamePanel.HEIGHT/2 - boxHeight/2;
+        
+        g2.setColor(new Color(50, 50, 50, 220));
+        g2.fillRoundRect(boxX, boxY, boxWidth+100, boxHeight+100, 20, 20);
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(boxX, boxY, boxWidth+100, boxHeight+100, 20, 20);
+        
+        // Title
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
+        g2.drawString("Are you sure you want to exit?", boxX + 20, boxY + 50);
+        
+        // Button
+        int buttonWidth = 150;
+        int buttonHeight = 50;
+        int buttonX = boxX + boxWidth/2 - buttonWidth/2;
+        int buttonY = boxY + 80;
+        
+        g2.setColor(exitButtonHeld ? Color.green : Color.red);
+        g2.fillRoundRect(buttonX, buttonY, buttonWidth, buttonHeight, 10, 10);
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(buttonX, buttonY, buttonWidth, buttonHeight, 10, 10);
+        
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
+        g2.drawString("Hold YES", buttonX + 25, buttonY + 30);
+        
+        // Progress bar
+        if(exitButtonHeld) {
+            float progress = Math.min(exitHoldFrames / (float)EXIT_HOLD_FRAMES, 1.0f);
+            
+            int barWidth = 300;
+            int barHeight = 20;
+            int barX = boxX + 50;
+            int barY = boxY + 140;
+            
+            // Background
+            g2.setColor(Color.gray);
+            g2.fillRoundRect(barX, barY, barWidth, barHeight, 5, 5);
+            
+            // Progress
+            g2.setColor(Color.green);
+            g2.fillRoundRect(barX, barY, (int)(barWidth * progress), barHeight, 5, 5);
+            
+            // Border
+            g2.setColor(Color.white);
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(barX, barY, barWidth, barHeight, 5, 5);
+            
+            // Text
+            g2.setColor(Color.white);
+            g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
+            int remainingSeconds = (EXIT_HOLD_FRAMES - exitHoldFrames) / 60; // Assuming 60 FPS
+            g2.drawString("Hold for " + remainingSeconds + " more seconds...", barX + 10, barY - 5);
+        } else {
+            g2.setColor(Color.white);
+            g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
+            g2.drawString("Hold SPACE to confirm exit", boxX + 100, boxY + 160);
+        }
+    }
     
 }
