@@ -67,7 +67,7 @@ public class PlayManager {
     // Exit Mini Game
     boolean exitButtonHeld = false;
     int exitHoldFrames = 0;
-    final int EXIT_HOLD_FRAMES = 300; // 5 seconds
+    final int EXIT_HOLD_FRAMES = 240; // 5 seconds
 
     // Score
     int level = 1;
@@ -297,8 +297,8 @@ public class PlayManager {
         }
         
         // Selection with SPACE or ENTER
-        if(KeyHandler.spacePressed) {
-            KeyHandler.spacePressed = false;
+        if(KeyHandler.ePressed) {
+            KeyHandler.ePressed = false;
             executeMenuSelection();
         }
     }
@@ -368,7 +368,7 @@ public class PlayManager {
                 exitButtonHeld = true;
                 exitHoldFrames = 0;
                 // Play crying sound or sad music
-                GamePanel.se.play(4, true); // Using block hit sound as crying for now
+                GamePanel.se.play(2, true); // Using gameOver
             }
         }
     }
@@ -568,7 +568,7 @@ public class PlayManager {
         
         g2.setColor(Color.gray);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-        g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 250, 550);
+        g2.drawString("Use W/UP or S/DOWN to navigate, E to select", GamePanel.WIDTH/2 - 250, 550);
         g2.drawString("Press F for fullscreen", GamePanel.WIDTH/2 - 100, 590);
         g2.drawString("Press R during game to restart", GamePanel.WIDTH/2 - 140, 630);
         
@@ -624,7 +624,7 @@ public class PlayManager {
         
         g2.setColor(Color.gray);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-        g2.drawString("Use UP/DOWN to navigate, SPACE to toggle/select", GamePanel.WIDTH/2 - 280, 550);
+        g2.drawString("Use W/UP or S/DOWN to navigate, E to toggle/select", GamePanel.WIDTH/2 - 280, 550);
     }
     
     private void drawGame(Graphics2D g2) {
@@ -810,7 +810,7 @@ public class PlayManager {
             // Draw instructions
             g2.setColor(Color.gray);
             g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
-            g2.drawString("Use UP/DOWN to navigate, SPACE/ESC to select", GamePanel.WIDTH/2 - 220, menuY + menuHeight - 20);
+            g2.drawString("Use UP/DOWN to navigate, E to select", GamePanel.WIDTH/2 - 220, menuY + menuHeight - 20);
         }
     }
     
@@ -848,16 +848,16 @@ public class PlayManager {
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         
         // Main box
-        int boxWidth = 400;
-        int boxHeight = 200;
-        int boxX = GamePanel.WIDTH/2 - boxWidth/2;
-        int boxY = GamePanel.HEIGHT/2 - boxHeight/2;
+        int boxX = GamePanel.WIDTH/2 - 250;
+        int boxY = GamePanel.HEIGHT/2 - 200;
+        int boxWidth = 500;
+        int boxHeight = 400;
         
-        g2.setColor(new Color(50, 50, 50, 220));
-        g2.fillRoundRect(boxX, boxY, boxWidth+100, boxHeight+100, 20, 20);
+        g2.setColor(Color.BLACK);
+        g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20);
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(boxX, boxY, boxWidth+100, boxHeight+100, 20, 20);
+        g2.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 20, 20);
         
         // Title
         g2.setColor(Color.white);
@@ -868,7 +868,7 @@ public class PlayManager {
         int buttonWidth = 150;
         int buttonHeight = 50;
         int buttonX = boxX + boxWidth/2 - buttonWidth/2;
-        int buttonY = boxY + 80;
+        int buttonY = boxY + buttonHeight + 200;
         
         g2.setColor(exitButtonHeld ? Color.green : Color.red);
         g2.fillRoundRect(buttonX, buttonY, buttonWidth, buttonHeight, 10, 10);
@@ -878,7 +878,7 @@ public class PlayManager {
         
         g2.setColor(Color.white);
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
-        g2.drawString("Hold YES", buttonX + 25, buttonY + 30);
+        g2.drawString("YES", buttonX + 25, buttonY + 30);
         
         // Progress bar
         if(exitButtonHeld) {
@@ -886,8 +886,8 @@ public class PlayManager {
             
             int barWidth = 300;
             int barHeight = 20;
-            int barX = boxX + 50;
-            int barY = boxY + 140;
+            int barX = boxX +100;
+            int barY = barHeight + 500;
             
             // Background
             g2.setColor(Color.gray);
@@ -906,11 +906,16 @@ public class PlayManager {
             g2.setColor(Color.white);
             g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
             int remainingSeconds = (EXIT_HOLD_FRAMES - exitHoldFrames) / 60; // Assuming 60 FPS
-            g2.drawString("Hold for " + remainingSeconds + " more seconds...", barX + 10, barY - 5);
+            g2.drawString("Hold for " + remainingSeconds + " more seconds...", barX, barY);
         } else {
+            int barHeight = 20;
+
+            int barX = boxX +100;
+            int barY = barHeight + 500;
+
             g2.setColor(Color.white);
             g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
-            g2.drawString("Hold SPACE to confirm exit", boxX + 100, boxY + 160);
+            g2.drawString("Hold SPACE to confirm exit", barX, barY);
         }
     }
     
