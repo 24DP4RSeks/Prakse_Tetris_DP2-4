@@ -41,9 +41,11 @@ public class PlayManager {
     // Others
     public static int dropInterval = 60; // mino drops in every 60 frames
     boolean gameOver;
+    boolean isPaused = false;  // Dedicated pause state (different from pausePressed toggle)
     public GameState gameState = GameState.MENU;
     int menuSelection = 0; // Menu: 0 = Start, 1 = Settings, 2 = Exit
     int settingsSelection = 0; // Settings: 0 = Music, 1 = Colorblind, 2 = Back
+    int pauseMenuSelection = 0; // Pause Menu: 0 = Resume, 1 = Sound, 2 = Settings, 3 = Menu
     
     // Settings
     public boolean isMuted = false;
@@ -190,6 +192,20 @@ public class PlayManager {
     }
     
     private void updateGame() {
+        try {
+            // Check if 1 button pressed to toggle pause
+            if(KeyHandler.pausePressed) {
+                isPaused = !isPaused;  // Toggle the pause state
+                KeyHandler.pausePressed = false;  // Clear the toggle flag immediately
+                pauseMenuSelection = 0;  // Reset menu selection
+            }
+            
+            // Handle pause menu if paused
+            if(isPaused) {
+                handlePauseMenu();
+                return;  // Don't process game logic while paused
+            }
+        
         // Check if R pressed to restart game
         if(KeyHandler.restartPressed) {
             resetGame();
@@ -197,7 +213,7 @@ public class PlayManager {
             return;
         }
         
-        // Check if ESC pressed to return to menu
+        // Check if ESC pressed to return to menu (only when NOT paused)
         if(KeyHandler.menuPressed) {
             gameState = GameState.MENU;
             menuSelection = 0;
@@ -240,6 +256,9 @@ public class PlayManager {
         else {
             currentMino.update();
         }
+        } catch(Exception ex) {
+            // Handle any unexpected errors gracefully
+        }
     }
     
     private void updateGameOver() {
@@ -257,6 +276,56 @@ public class PlayManager {
         resetGame();
     }
     
+    private void handlePauseMenu() {
+        // Navigation - must check and clear immediately
+        if(KeyHandler.upPressed) {
+            pauseMenuSelection--;
+            if(pauseMenuSelection < 0) pauseMenuSelection = 3;
+            KeyHandler.upPressed = false;
+        } else if(KeyHandler.downPressed) {
+            pauseMenuSelection++;
+            if(pauseMenuSelection > 3) pauseMenuSelection = 0;
+            KeyHandler.downPressed = false;
+        }
+        
+        // Selection with SPACE or ENTER
+        if(KeyHandler.spacePressed) {
+            KeyHandler.spacePressed = false;
+            executeMenuSelection();
+        }
+    }
+    
+    private void executeMenuSelection() {
+        if(pauseMenuSelection == 0) {
+            // Resume
+            isPaused = false;
+            pauseMenuSelection = 0;
+        } else if(pauseMenuSelection == 1) {
+            // Toggle mute
+            isMuted = !isMuted;
+            if(isMuted) {
+                GamePanel.music.stop();
+            } else {
+                GamePanel.music.play(5 + currentMusicTheme, true);
+                GamePanel.music.loop();
+            }
+        } else if(pauseMenuSelection == 2) {
+            // Change music theme
+            currentMusicTheme = (currentMusicTheme + 1) % 4;
+            if(!isMuted) {
+                GamePanel.music.stop();
+                GamePanel.music.play(5 + currentMusicTheme, true);
+                GamePanel.music.loop();
+            }
+        } else if(pauseMenuSelection == 3) {
+            // Return to menu
+            gameState = GameState.MENU;
+            menuSelection = 0;
+            isPaused = false;
+            pauseMenuSelection = 0;
+        }
+    }
+    
     private void resetGame() {
         staticBlocks.clear();
         level = 1;
@@ -266,6 +335,8 @@ public class PlayManager {
         comboEffectOn = false;
         comboEffectCounter = 0;
         lastLinesClearedTime = 0;
+        isPaused = false;
+        pauseMenuSelection = 0;
         gameOver = false;
         dropInterval = 60;  // Reset to initial speed
         currentMino = pickMino();
@@ -357,7 +428,10 @@ public class PlayManager {
             }
             
             // Apply level multiplier (level 1 = 1x, level 2 = 2x, etc.)
-            int baseScore = lineScoreBase * level;
+            // Apply level multiplier with scaling (1 + 0.1 * level bonus)
+            // Level 1 = 1.0x, Level 2 = 1.1x, Level 3 = 1.2x, etc.
+            float levelMultiplier = 1.0f + (level - 1) * 0.1f;
+            int baseScore = (int)(lineScoreBase * levelMultiplier);
             
             // Calculate score with combo multiplier
             // Combo multiplier: 1x = 1.0, 2x = 1.5, 3x = 2.0, 4x = 2.5, etc.
@@ -374,7 +448,7 @@ public class PlayManager {
                 GamePanel.se.play(2, false);  // Play a special sound for combo
             }
             
-            // Update difficulty based on score
+            // Update difficulty based on lines cleared
             updateDifficulty();
         }
 
@@ -382,17 +456,13 @@ public class PlayManager {
     }
     
     private void updateDifficulty() {
-        // Speed up drop interval every 100 points
-        // Every 100 score: decrease dropInterval by 5 frames (speeds up)
-        // Minimum dropInterval is 10 frames to avoid making it too fast
-        int scoreThreshold = (score / 100) * 100; // Get current score threshold
-        int difficultyLevel = score / 100;
+        // Level up based on lines cleared: every 5 lines = 1 level
+        level = 1 + (lines / 5);
         
-        // Start with 60, subtract (5 * difficultyLevel) but never go below 10
-        dropInterval = Math.max(10, 60 - (difficultyLevel * 5));
-        
-        // Update level based on score milestones too
-        level = 1 + (score / 100);
+        // Speed up drop interval based on both lines and score
+        // Increases difficulty as game progresses
+        int speedIncrease = (lines / 5) + (score / 1000);
+        dropInterval = Math.max(10, 60 - (speedIncrease * 3));
     }
     public void draw(Graphics2D g2) {
         if(gameState == GameState.MENU) {
@@ -449,6 +519,11 @@ public class PlayManager {
         g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 250, 550);
         g2.drawString("Press F for fullscreen", GamePanel.WIDTH/2 - 100, 590);
         g2.drawString("Press R during game to restart", GamePanel.WIDTH/2 - 140, 630);
+        
+        // Draw title
+        g2.setColor(new Color(150, 150, 150));
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        g2.drawString("Simple Tetris Game", GamePanel.WIDTH/2 - 80, GamePanel.HEIGHT - 20);
     }
     
     private void drawSettings(Graphics2D g2) {
@@ -610,26 +685,81 @@ public class PlayManager {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
         }
 
-        // Draw pause
-        g2.setColor(Color.yellow);
-        g2.setFont(g2.getFont().deriveFont(50f));
-        if(KeyHandler.pausePressed) {
-            x = left_x + 70;
-            y = top_y + 320;
-            g2.drawString("PAUSED", x, y);
+        // Draw pause menu
+        if(isPaused) {
+            // Draw semi-transparent overlay
+            g2.setColor(new Color(0, 0, 0, 200));
+            g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
             
-            // Show pause menu instructions
-            g2.setColor(Color.white);
-            g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-            g2.drawString("Press 1 to continue", left_x + 80, top_y + 400);
-            g2.drawString("Press ESC to return to menu", left_x + 60, top_y + 430);
+            // Draw pause menu box
+            int menuX = GamePanel.WIDTH/2 - 250;
+            int menuY = GamePanel.HEIGHT/2 - 200;
+            int menuWidth = 500;
+            int menuHeight = 400;
+            
+            g2.setColor(new Color(30, 30, 50, 255));
+            g2.fillRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
+            
+            g2.setColor(Color.yellow);
+            g2.setStroke(new BasicStroke(3f));
+            g2.drawRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
+            
+            // Draw title
+            g2.setColor(Color.yellow);
+            g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
+            g2.drawString("PAUSED", GamePanel.WIDTH/2 - 130, menuY + 70);
+            
+            // Draw menu options
+            Font optionFont = new Font("Comic Sans MS", Font.PLAIN, 28);
+            g2.setFont(optionFont);
+            
+            int optionY = menuY + 130;
+            int lineHeight = 70;
+            
+            // Resume option
+            if(pauseMenuSelection == 0) {
+                g2.setColor(Color.yellow);
+                g2.drawString("> RESUME", GamePanel.WIDTH/2 - 100, optionY);
+            } else {
+                g2.setColor(Color.white);
+                g2.drawString("  RESUME", GamePanel.WIDTH/2 - 100, optionY);
+            }
+            
+            // Sound option
+            optionY += lineHeight;
+            if(pauseMenuSelection == 1) {
+                g2.setColor(Color.yellow);
+                g2.drawString("> SOUND: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, optionY);
+            } else {
+                g2.setColor(Color.white);
+                g2.drawString("  SOUND: " + (isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 150, optionY);
+            }
+            
+            // Theme option
+            optionY += lineHeight;
+            if(pauseMenuSelection == 2) {
+                g2.setColor(Color.yellow);
+                g2.drawString("> THEME: " + (currentMusicTheme + 1), GamePanel.WIDTH/2 - 120, optionY);
+            } else {
+                g2.setColor(Color.white);
+                g2.drawString("  THEME: " + (currentMusicTheme + 1), GamePanel.WIDTH/2 - 120, optionY);
+            }
+            
+            // Menu option
+            optionY += lineHeight;
+            if(pauseMenuSelection == 3) {
+                g2.setColor(Color.yellow);
+                g2.drawString("> MENU", GamePanel.WIDTH/2 - 80, optionY);
+            } else {
+                g2.setColor(Color.white);
+                g2.drawString("  MENU", GamePanel.WIDTH/2 - 80, optionY);
+            }
+            
+            // Draw instructions
+            g2.setColor(Color.gray);
+            g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+            g2.drawString("Use UP/DOWN to navigate, SPACE/ESC to select", GamePanel.WIDTH/2 - 220, menuY + menuHeight - 20);
         }
-
-        x = 35;
-        y = top_y + 320;
-        g2.setColor(Color.white);
-        g2.setFont(new Font("Comic Sans MS", Font.ITALIC, 60));
-        g2.drawString("Simple Tetris", x+20, y);
     }
     
     private Color getColorForMode(Color c) {

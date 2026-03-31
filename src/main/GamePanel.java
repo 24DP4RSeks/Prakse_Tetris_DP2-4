@@ -66,18 +66,24 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
     private void update() {
+        // Ensure this panel has focus for keyboard input
+        if(!this.hasFocus()) {
+            this.requestFocus();
+        }
+        
         // Handle fullscreen toggle
         if(KeyHandler.fullscreenPressed) {
             Main.toggleFullscreen();
             KeyHandler.fullscreenPressed = false;
         }
         
-        // Handle ESC to return to menu even when paused
-        if(KeyHandler.menuPressed && pm.gameState == GameState.PLAYING) {
+        // Handle ESC to return to menu (only when NOT paused)
+        if(KeyHandler.menuPressed && pm.gameState == GameState.PLAYING && !pm.isPaused) {
+            System.out.println("[GAMEPANEL] ESC pressed, returning to menu");
+            System.out.flush();
             pm.gameState = GameState.MENU;
             pm.menuSelection = 0;
             KeyHandler.menuPressed = false;
-            KeyHandler.pausePressed = false;
             return;
         }
         
@@ -88,9 +94,8 @@ public class GamePanel extends JPanel implements Runnable {
             pm.update();  // Settings menu updates for navigation
         }
         else if(pm.gameState == GameState.PLAYING) {
-            if(KeyHandler.pausePressed == false) {
-                pm.update();  // Only update when not paused
-            }
+            // Always update, even when paused - pausePressed is handled inside updateGame()
+            pm.update();
         }
         else if(pm.gameState == GameState.GAME_OVER) {
             pm.update();  // Game Over state updates for input

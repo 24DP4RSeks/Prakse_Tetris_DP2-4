@@ -21,14 +21,15 @@ public class KeyHandler implements KeyListener{
     public void keyPressed(KeyEvent e) {
         
         int code = e.getKeyCode();
+        
         if(code == KeyEvent.VK_UP || code == KeyEvent.VK_W){
-        upPressed = true;
+            upPressed = true;
         }
         if(code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S){
             downPressed = true;
-}
+        }
 
-        if(code == KeyEvent.VK_SPACE){
+        if(code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER){
             spacePressed = true;
         }
         if(code == KeyEvent.VK_A){
@@ -43,7 +44,6 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_1){
             if(pausePressed) {
                 pausePressed = false;
-
             }
             else {
                 pausePressed = true;
