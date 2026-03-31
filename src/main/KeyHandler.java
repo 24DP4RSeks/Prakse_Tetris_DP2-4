@@ -13,6 +13,7 @@ public class KeyHandler implements KeyListener{
     public static boolean menuPressed;
     public static boolean fullscreenPressed;
     public static boolean restartPressed;
+    public static boolean ePressed;
     
     @Override
     public void keyTyped(KeyEvent e) {}
@@ -31,6 +32,9 @@ public class KeyHandler implements KeyListener{
 
         if(code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER){
             spacePressed = true;
+        }
+        if(code == KeyEvent.VK_E){
+            ePressed = true;
         }
         if(code == KeyEvent.VK_A){
             leftPressed = true;
@@ -65,6 +69,9 @@ public class KeyHandler implements KeyListener{
         int code = e.getKeyCode();
         if(code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER){
             spacePressed = false;
+        }
+        if(code == KeyEvent.VK_E){
+            ePressed = false;
         }
     }
 

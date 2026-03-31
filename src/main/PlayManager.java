@@ -67,7 +67,7 @@ public class PlayManager {
     // Exit Mini Game
     boolean exitButtonHeld = false;
     int exitHoldFrames = 0;
-    final int EXIT_HOLD_FRAMES = 60; // 1 second for testing
+    final int EXIT_HOLD_FRAMES = 300; // 5 seconds
 
     // Score
     int level = 1;
@@ -142,7 +142,7 @@ public class PlayManager {
             if(menuSelection > 2) menuSelection = 0;
             KeyHandler.downPressed = false;
         }
-        if(KeyHandler.spacePressed) {
+        if(KeyHandler.ePressed) {
             if(menuSelection == 0) {
                 startGame();
             } else if(menuSelection == 1) {
@@ -151,7 +151,7 @@ public class PlayManager {
             } else if(menuSelection == 2) {
                 System.exit(0);
             }
-            KeyHandler.spacePressed = false;
+            KeyHandler.ePressed = false;
         }
     }
     
@@ -167,7 +167,7 @@ public class PlayManager {
             if(settingsSelection > 3) settingsSelection = 0;
             KeyHandler.downPressed = false;
         }
-        if(KeyHandler.spacePressed) {
+        if(KeyHandler.ePressed) {
             if(settingsSelection == 0) {
                 // Toggle mute
                 isMuted = !isMuted;
@@ -195,7 +195,7 @@ public class PlayManager {
                 gameState = GameState.MENU;
                 menuSelection = 0;
             }
-            KeyHandler.spacePressed = false;
+            KeyHandler.ePressed = false;
         }
     }
     
@@ -328,9 +328,8 @@ public class PlayManager {
         } else if(pauseMenuSelection == 3) {
             // Exit mini game
             gameState = GameState.EXIT_MINI_GAME;
-            exitButtonHeld = false;
+            exitButtonHeld = KeyHandler.spacePressed; // Start holding if space is currently pressed
             exitHoldFrames = 0;
-            KeyHandler.spacePressed = false; // Reset the space press used to select this option
         }
     }
     
@@ -345,29 +344,32 @@ public class PlayManager {
             return;
         }
         
-        if(KeyHandler.spacePressed) {
-            if(!exitButtonHeld) {
+        if(exitButtonHeld) {
+            if(KeyHandler.spacePressed) {
+                exitHoldFrames++;
+                if(exitHoldFrames >= EXIT_HOLD_FRAMES) {
+                    // Successfully held for required time, exit to menu
+                    gameState = GameState.MENU;
+                    menuSelection = 0;
+                    isPaused = false;
+                    pauseMenuSelection = 0;
+                    exitButtonHeld = false;
+                    exitHoldFrames = 0;
+                    KeyHandler.spacePressed = false;
+                    GamePanel.se.stop(); // Stop the sound
+                }
+            } else {
+                exitButtonHeld = false;
+                exitHoldFrames = 0;
+                GamePanel.se.stop(); // Stop sound if released early
+            }
+        } else {
+            if(KeyHandler.spacePressed) {
                 exitButtonHeld = true;
                 exitHoldFrames = 0;
                 // Play crying sound or sad music
                 GamePanel.se.play(4, true); // Using block hit sound as crying for now
             }
-            exitHoldFrames++;
-            if(exitHoldFrames >= EXIT_HOLD_FRAMES) {
-                // Successfully held for 5 seconds, exit to menu
-                gameState = GameState.MENU;
-                menuSelection = 0;
-                isPaused = false;
-                pauseMenuSelection = 0;
-                exitButtonHeld = false;
-                exitHoldFrames = 0;
-                KeyHandler.spacePressed = false;
-                GamePanel.se.stop(); // Stop the sound
-            }
-        } else {
-            exitButtonHeld = false;
-            exitHoldFrames = 0;
-            GamePanel.se.stop(); // Stop sound if released early
         }
     }
     

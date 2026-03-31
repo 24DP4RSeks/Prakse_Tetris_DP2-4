@@ -100,6 +100,9 @@ public class GamePanel extends JPanel implements Runnable {
         else if(pm.gameState == GameState.GAME_OVER) {
             pm.update();  // Game Over state updates for input
         }
+        else if(pm.gameState == GameState.EXIT_MINI_GAME) {
+            pm.update();  // Exit mini-game updates for countdown
+        }
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
