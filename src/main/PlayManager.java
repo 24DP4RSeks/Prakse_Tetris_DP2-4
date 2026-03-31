@@ -245,6 +245,7 @@ public class PlayManager {
                 // so its xy are the same with the nextMino
                 gameOver = true;
                 gameState = GameState.GAME_OVER;
+                GamePanel.music.play(2 + currentMusicTheme, true);
             }
 
             currentMino.deactivating = false;
@@ -829,7 +830,6 @@ public class PlayManager {
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("Score: " + score, GamePanel.WIDTH/2 - 80, 350);
         g2.drawString("Press SPACE to return to menu", GamePanel.WIDTH/2 - 200, 450);
-        g2.drawString("or ESC", GamePanel.WIDTH/2 - 40, 500);
     }
     
     private void drawExitMiniGame(Graphics2D g2) {
