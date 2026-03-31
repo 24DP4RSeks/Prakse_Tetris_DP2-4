@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -53,6 +54,13 @@ public class PlayManager {
     boolean effectCounterOn;
     int effectCounter;
     ArrayList<Integer> effectY = new ArrayList<>();
+
+    // Combo System
+    int combo = 0;
+    int comboEffectCounter = 0;
+    boolean comboEffectOn = false;
+    long lastLinesClearedTime = 0;
+    final long COMBO_TIMEOUT = 2000; // 2 seconds to maintain combo
 
     // Score
     int level = 1;
@@ -254,6 +262,10 @@ public class PlayManager {
         level = 1;
         lines = 0;
         score = 0;
+        combo = 0;
+        comboEffectOn = false;
+        comboEffectCounter = 0;
+        lastLinesClearedTime = 0;
         gameOver = false;
         dropInterval = 60;  // Reset to initial speed
         currentMino = pickMino();
@@ -315,13 +327,52 @@ public class PlayManager {
             }
         }
 
-        // Add Score
+        // Add Score with Combo System
         if(lineCount > 0){
             // Play line delete sound
             GamePanel.se.play(1, false);
             
-            int singleLineScore = 10 * level;
-            score +=  singleLineScore + lineCount;
+            long currentTime = System.currentTimeMillis();
+            
+            // Check if combo should continue or reset
+            if(currentTime - lastLinesClearedTime > COMBO_TIMEOUT) {
+                // Combo timed out or first clear, reset combo
+                combo = 1;
+            } else {
+                // Combo continues! Increase it
+                combo++;
+            }
+            
+            lastLinesClearedTime = currentTime;
+            
+            // Calculate base score based on lines cleared (Tetris-style scoring)
+            // 1 line: 100, 2 lines: 300, 3 lines: 500, 4 lines (Tetris): 800
+            int lineScoreBase;
+            switch(lineCount) {
+                case 1: lineScoreBase = 100; break;
+                case 2: lineScoreBase = 300; break;
+                case 3: lineScoreBase = 500; break;
+                case 4: lineScoreBase = 800; break;
+                default: lineScoreBase = 50 * lineCount; break;
+            }
+            
+            // Apply level multiplier (level 1 = 1x, level 2 = 2x, etc.)
+            int baseScore = lineScoreBase * level;
+            
+            // Calculate score with combo multiplier
+            // Combo multiplier: 1x = 1.0, 2x = 1.5, 3x = 2.0, 4x = 2.5, etc.
+            float comboMultiplier = 1.0f + (combo - 1) * 0.5f;
+            
+            int comboScore = (int)(baseScore * comboMultiplier);
+            
+            score += comboScore;
+            
+            // Trigger combo effect if combo is 2 or more
+            if(combo >= 2) {
+                comboEffectOn = true;
+                comboEffectCounter = 0;
+                GamePanel.se.play(2, false);  // Play a special sound for combo
+            }
             
             // Update difficulty based on score
             updateDifficulty();
@@ -484,8 +535,17 @@ public class PlayManager {
         g2.drawString("SCORE", x+45,top_y + 130);
         x += 20;
         y = top_y + 180;
-        g2.drawString("LEVEL: " + level,x ,y); y+=70;
-        g2.drawString("LINES: " + lines,x ,y); y+=70;
+        g2.drawString("LEVEL: " + level,x ,y); y+=50;
+        g2.drawString("LINES: " + lines,x ,y); y+=50;
+        
+        // Draw Combo Display
+        if(combo > 0) {
+            g2.setColor(combo >= 2 ? Color.yellow : Color.white);
+            g2.drawString("COMBO: x" + combo, x, y); 
+            y += 50;
+        }
+        
+        g2.setColor(Color.white);
         g2.drawString("SCORE: " + score,x ,y);
 
         // Draw the currentMino
@@ -514,6 +574,40 @@ public class PlayManager {
                 effectCounter = 0;
                 effectY.clear();
             }
+        }
+
+        // Draw Combo Effect
+        if(comboEffectOn) {
+            comboEffectCounter++;
+            
+            // Font size increases and fades out
+            float alpha = 1.0f - (comboEffectCounter / 60.0f);
+            
+            if(alpha > 0) {
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                g2.setColor(Color.yellow);
+                g2.setFont(new Font("Comic Sans MS", Font.BOLD, 40 + comboEffectCounter));
+                
+                String comboText = "COMBO x" + combo + "!";
+                int textX = right_x - 150;
+                int textY = top_y + 300 - comboEffectCounter;
+                
+                // Draw shadow for better visibility
+                g2.setColor(new Color(0, 0, 0, (int)(alpha * 200)));
+                g2.drawString(comboText, textX + 2, textY + 2);
+                
+                // Draw main text
+                g2.setColor(Color.yellow);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                g2.drawString(comboText, textX, textY);
+                
+                if(comboEffectCounter >= 60) {
+                    comboEffectOn = false;
+                    comboEffectCounter = 0;
+                }
+            }
+            
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
         }
 
         // Draw pause
