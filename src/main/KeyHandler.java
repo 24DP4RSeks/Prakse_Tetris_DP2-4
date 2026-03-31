@@ -45,7 +45,7 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_D){
             rightPressed = true;
         }
-        if(code == KeyEvent.VK_1){
+        if(code == KeyEvent.VK_ESCAPE){
             if(pausePressed) {
                 pausePressed = false;
             }
@@ -53,9 +53,7 @@ public class KeyHandler implements KeyListener{
                 pausePressed = true;
             }
         }
-        if(code == KeyEvent.VK_ESCAPE){
-            menuPressed = true;
-        }
+        
         if(code == KeyEvent.VK_F){
             fullscreenPressed = true;
         }
