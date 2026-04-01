@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
 
-import main.java.main.mino.*;
+import main.java.mino.*;
 
 public class PlayManager {
 

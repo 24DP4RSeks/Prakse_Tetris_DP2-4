@@ -4,7 +4,7 @@ package main.java.main;
 
 import java.util.Random;
 
-import main.java.main.mino.*;
+import main.java.mino.*;
 
 public class MinoFactory {
     public static Mino pickMino() {

@@ -1,4 +1,4 @@
-package main.java.main.mino;
+package main.java.mino;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

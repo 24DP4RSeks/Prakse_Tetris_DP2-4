@@ -1,6 +1,6 @@
 package main.java.main;
 
-import main.java.main.mino.*;
+import main.java.mino.*;
 
 public class GameResetManager {
     public static void resetGame(PlayManager pm) {

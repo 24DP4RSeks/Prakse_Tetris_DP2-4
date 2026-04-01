@@ -4,7 +4,7 @@ package main.java.main;
 
 import java.util.ArrayList;
 
-import main.java.main.mino.*;
+import main.java.mino.*;
 
 import java.awt.Color;
 

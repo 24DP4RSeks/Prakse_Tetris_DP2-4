@@ -6,7 +6,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import main.java.main.mino.*;
+import main.java.mino.*;
 
 import java.awt.BasicStroke;
 

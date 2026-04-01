@@ -29,6 +29,18 @@ public class Main{
                 window.setVisible(true);
 
                 gp.launchGame();
+
+                DatabaseHandler db = new DatabaseHandler();
+                db.connect();
+                
+                // TEST 1: Register a player
+                db.registerPlayer("Roman", "securePass123");
+                
+                // TEST 2: Update their score
+                db.updateIfHighScore("Roman", 500);
+                
+                // TEST 3: Show the leaderboard
+                db.showLeaderboard();
         }
         
         public static void toggleFullscreen() {
