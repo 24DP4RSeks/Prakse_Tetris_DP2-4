@@ -58,7 +58,8 @@ public class LoginManager {
     private void handleAuth() {
         if (pm.gameState == GameState.LOGIN) {
             if (db.login(username, password)) {
-                pm.currentUsername = this.username; 
+                pm.currentUsername = this.username;
+                pm.isGuest = false;
                 pm.startGame();
                 KeyHandler.ePressed = false;
             } else {
