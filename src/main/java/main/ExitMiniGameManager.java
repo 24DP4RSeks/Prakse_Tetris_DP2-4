@@ -70,12 +70,12 @@ public class ExitMiniGameManager {
         g2.setColor(Color.black);
         g2.fillRoundRect(menuX, menuY + 50, menuWidth, menuHeight / 2, 20, 20);
 
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(menuX, menuY + 50, menuWidth, menuHeight / 2, 20, 20);
         
         // Title
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
         g2.drawString("You sure?", menuX + menuWidth / 2 / 2 + 30, menuY + 100);
         
@@ -86,9 +86,9 @@ public class ExitMiniGameManager {
         int buttonY = menuY + 100;
         
         if(pm.confirmSelection == 0) {
-            g2.setColor(Color.yellow);
+            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
         } else {
-            g2.setColor(Color.white);
+            g2.setColor(getColor(Color.white, pm.colorblindMode));
         }
         g2.drawString("No", noX + 20, buttonY + 75);
         
@@ -96,16 +96,25 @@ public class ExitMiniGameManager {
         int yesX = menuX + menuWidth - 50 - buttonWidth;
         
         if(pm.confirmSelection == 1) {
-            g2.setColor(Color.yellow);
+            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
         } else {
-            g2.setColor(Color.white);
+            g2.setColor(getColor(Color.white, pm.colorblindMode));
         }
         g2.drawString("Yes", yesX + 20, buttonY + 75);
         
         // Instructions
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         g2.drawString("Use ARROW keys to select, ENTER to confirm", menuX + menuX / 2 - 60, menuHeight);
 
+    }
+
+    private Color getColor(Color original, boolean colorblindMode) {
+        if (!colorblindMode) {
+            return original;
+        }
+        // Convert to grayscale using luminance formula
+        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
+        return new Color(gray, gray, gray);
     }
 }

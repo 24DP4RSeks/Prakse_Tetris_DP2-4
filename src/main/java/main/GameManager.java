@@ -140,7 +140,7 @@ public class GameManager {
 
     public void draw(Graphics2D g2) {
         // Draw the play area
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setStroke(new BasicStroke(4f));
         g2.drawRect(pm.left_x - 4, pm.top_y - 4, pm.WIDTH + 8, pm.HEIGHT + 8);
         
@@ -149,7 +149,7 @@ public class GameManager {
         int y = pm.bottom_y - 200;
         g2.drawRect(x, y, 200, 200);
         g2.setFont(new Font("Arial", Font.PLAIN, 30));
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.drawString("NEXT", x + 60, y + 60);
         
         // Draw score area
@@ -162,17 +162,17 @@ public class GameManager {
         
         // Draw the currentMino
         if(pm.currentMino != null) {
-            pm.currentMino.draw(g2);
+            pm.currentMino.draw(g2, pm.colorblindMode);
         }
         
         // Draw the nextMino
         if(pm.nextMino != null) {
-            pm.nextMino.draw(g2);
+            pm.nextMino.draw(g2, pm.colorblindMode);
         }
         
         // Draw static blocks
         for(int i = 0; i < pm.staticBlocks.size(); i++) {
-            pm.staticBlocks.get(i).draw(g2);
+            pm.staticBlocks.get(i).draw(g2, pm.colorblindMode);
         }
 
         drawLeaderboard(g2);
@@ -185,7 +185,7 @@ public class GameManager {
         
         // Draw effect
         if(pm.comboEffectOn) {
-            g2.setColor(Color.red);
+            g2.setColor(getColor(Color.red, pm.colorblindMode));
             g2.setFont(new Font("Arial", Font.BOLD, 50));
             g2.drawString("COMBO x" + pm.combo, pm.left_x + 50, pm.top_y + 200);
             pm.comboEffectCounter++;
@@ -194,6 +194,15 @@ public class GameManager {
                 pm.comboEffectCounter = 0;
             }
         }
+    }
+
+    private Color getColor(Color original, boolean colorblindMode) {
+        if (!colorblindMode) {
+            return original;
+        }
+        // Convert to grayscale using luminance formula
+        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
+        return new Color(gray, gray, gray);
     }
 
     private void drawControlGuide(Graphics2D g2) {
@@ -207,7 +216,7 @@ public class GameManager {
         g2.setColor(new Color(0, 0, 0, 170));
         g2.fillRect(boxX, boxY, boxWidth, boxHeight);
 
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         g2.drawString("CONTROLS", boxX + padding, boxY + 28);
 
@@ -234,7 +243,7 @@ public class GameManager {
         g2.setColor(new Color(0, 0, 0, 170));
         g2.fillRect(boxX, boxY, boxW, boxH);
 
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
         g2.drawString("TOP 10 LEADERBOARD", boxX + 10, boxY + 30);
 
@@ -244,7 +253,7 @@ public class GameManager {
         }
 
         if (topPlayers.isEmpty()) {
-            g2.setColor(Color.gray);
+            g2.setColor(getColor(Color.gray, pm.colorblindMode));
             g2.drawString("No data yet", boxX + 10, boxY + 60);
         }
     }
@@ -253,7 +262,7 @@ public class GameManager {
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         
-        g2.setColor(Color.white);
+        g2.setColor(getColor(Color.white, pm.colorblindMode));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
         g2.drawString("PAUSED", GamePanel.WIDTH/2 - 100, 200);
         
@@ -267,45 +276,45 @@ public class GameManager {
         
         // Draw Resume
         if(pm.pauseMenuSelection == 0) {
-            g2.setColor(Color.yellow);
+            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
             g2.drawString("> RESUME", GamePanel.WIDTH/2 - 100, optionY);
         } else {
-            g2.setColor(Color.white);
+            g2.setColor(getColor(Color.white, pm.colorblindMode));
             g2.drawString("  RESUME", GamePanel.WIDTH/2 - 100, optionY);
         }
         
         optionY += spacing;
         // Draw Sound toggle
         if(pm.pauseMenuSelection == 1) {
-            g2.setColor(Color.yellow);
+            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
             g2.drawString("> SOUND: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 100, optionY);
         } else {
-            g2.setColor(Color.white);
+            g2.setColor(getColor(Color.white, pm.colorblindMode));
             g2.drawString("  SOUND: " + (pm.isMuted ? "OFF" : "ON"), GamePanel.WIDTH/2 - 100, optionY);
         }
         
         optionY += spacing;
         // Draw Theme
         if(pm.pauseMenuSelection == 2) {
-            g2.setColor(Color.yellow);
+            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
             g2.drawString("> THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 100, optionY);
         } else {
-            g2.setColor(Color.white);
+            g2.setColor(getColor(Color.white, pm.colorblindMode));
             g2.drawString("  THEME: " + (pm.currentMusicTheme + 1), GamePanel.WIDTH/2 - 100, optionY);
         }
         
         optionY += spacing;
         // Draw Menu
         if(pm.pauseMenuSelection == 3) {
-            g2.setColor(Color.yellow);
+            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
             g2.drawString("> MENU", GamePanel.WIDTH/2 - 80, optionY);
         } else {
-            g2.setColor(Color.white);
+            g2.setColor(getColor(Color.white, pm.colorblindMode));
             g2.drawString("  MENU", GamePanel.WIDTH/2 - 80, optionY);
         }
         
         // Draw instructions
-        g2.setColor(Color.gray);
+        g2.setColor(getColor(Color.gray, pm.colorblindMode));
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         g2.drawString("Use UP/DOWN to navigate, ENTER to select", GamePanel.WIDTH/2 - 150, menuY + menuHeight);
     }
