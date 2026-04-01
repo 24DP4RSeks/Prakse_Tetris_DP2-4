@@ -26,6 +26,8 @@ public class GameRenderer {
             g2.drawLine(pm.left_x, y, pm.right_x, y);
         }
 
+       
+
         // Draw Sidebar Boxes
         g2.setColor(Color.white);
         int sx = pm.right_x + 100;
@@ -39,6 +41,8 @@ public class GameRenderer {
         g2.drawRoundRect(sx, pm.top_y + 140, 200, 250, 15, 15); // Made box slightly taller
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("SCORE", sx + 45, pm.top_y + 130);
+
+        
         
         int textX = sx + 20;
         int textY = pm.top_y + 180;
@@ -50,6 +54,7 @@ public class GameRenderer {
             g2.drawString("COMBO: x" + pm.combo, textX, textY);
             textY += 50;
         }
+        
 
         g2.setColor(Color.white);
         g2.drawString("PTS: " + pm.score, textX, textY);
@@ -114,7 +119,11 @@ public class GameRenderer {
         if (pm.isPaused) {
             drawPauseMenu(pm, g2);
         }
+
+        
     }
+
+
 
     private static void drawPauseMenu(PlayManager pm, Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 200));

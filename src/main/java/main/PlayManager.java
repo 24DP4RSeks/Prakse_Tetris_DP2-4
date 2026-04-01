@@ -115,4 +115,6 @@ public class PlayManager {
             case REGISTER: loginManager.draw(g2); break; // Added routing
         }
     }
+
+    
 }
