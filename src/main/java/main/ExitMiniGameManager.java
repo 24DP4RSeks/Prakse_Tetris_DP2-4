@@ -55,7 +55,7 @@ public class ExitMiniGameManager {
 
     public void draw(Graphics2D g2) {
         // Draw the game in background
-        GameRenderer.drawGame(pm, g2);
+        
         
         // Semi-transparent overlay
         g2.setColor(new Color(0, 0, 0, 150));
@@ -105,7 +105,7 @@ public class ExitMiniGameManager {
         // Instructions
         g2.setColor(Color.white);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
-        g2.drawString("Use A/D to select, E to confirm", menuX + menuX / 2 - 60, menuHeight);
+        g2.drawString("Use ARROW keys to select, ENTER to confirm", menuX + menuX / 2 - 60, menuHeight);
 
     }
 }

@@ -176,6 +176,7 @@ public class GameManager {
         }
 
         drawLeaderboard(g2);
+        drawControlGuide(g2);
         
         // Draw pause menu if paused
         if(pm.isPaused) {
@@ -193,9 +194,6 @@ public class GameManager {
                 pm.comboEffectCounter = 0;
             }
         }
-
-        // Draw control guide in bottom-left corner
-        drawControlGuide(g2);
     }
 
     private void drawControlGuide(Graphics2D g2) {
@@ -217,12 +215,12 @@ public class GameManager {
         int lineY = boxY + 52;
         int lineSpacing = 20;
 
-        g2.drawString("← / →  : Move left / right", boxX + padding, lineY); lineY += lineSpacing;
-        g2.drawString("↓      : Soft drop", boxX + padding, lineY); lineY += lineSpacing;
-        g2.drawString("SPACE  : Hard drop", boxX + padding, lineY); lineY += lineSpacing;
-        g2.drawString("UP     : Rotate", boxX + padding, lineY); lineY += lineSpacing;
-        g2.drawString("ESC    : Pause / Menu", boxX + padding, lineY); lineY += lineSpacing;
-        g2.drawString("R      : Restart", boxX + padding, lineY);
+        g2.drawString("ARROW_LEFT : Move left", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("ARROW_RIGHT: Move right", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("ARROW_DOWN : Soft drop", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("SPACE      : Rotate", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("ESC        : Pause / Menu", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("R          : Restart", boxX + padding, lineY);
     }
 
     private void drawLeaderboard(Graphics2D g2) {
@@ -237,7 +235,7 @@ public class GameManager {
         g2.fillRect(boxX, boxY, boxW, boxH);
 
         g2.setColor(Color.white);
-        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
         g2.drawString("TOP 10 LEADERBOARD", boxX + 10, boxY + 30);
 
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
@@ -309,6 +307,6 @@ public class GameManager {
         // Draw instructions
         g2.setColor(Color.gray);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
-        g2.drawString("Use UP/DOWN to navigate, SPACE to select", GamePanel.WIDTH/2 - 150, menuY + menuHeight);
+        g2.drawString("Use UP/DOWN to navigate, ENTER to select", GamePanel.WIDTH/2 - 150, menuY + menuHeight);
     }
 }
