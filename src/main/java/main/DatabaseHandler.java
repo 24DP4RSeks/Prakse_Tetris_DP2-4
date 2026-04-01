@@ -8,88 +8,85 @@ import org.bson.Document;
 import com.mongodb.client.FindIterable;
 import static com.mongodb.client.model.Sorts.descending;
 
-
 public class DatabaseHandler {
 
     private MongoCollection<Document> scoreCollection;
 
     public void connect() {
-    try {
-        String connectionString = "mongodb+srv://player1:1234@tetrisusers.xk6hppj.mongodb.net/?retryWrites=true&w=majority&appName=tetrisUsers";
-        
-        MongoClientURI uri = new MongoClientURI(connectionString);
-        MongoClient mongoClient = new MongoClient(uri);
-        
-        // Let's use a clear database name
-        MongoDatabase database = mongoClient.getDatabase("TetrisGame");
-        
-        // We'll use one collection for both profile and scores
-        scoreCollection = database.getCollection("players");
-        
-        System.out.println("Successfully connected to MongoDB Atlas!");
-        
-    } catch (Exception e) {
-        System.out.println("Connection Error: " + e.getMessage());
-        e.printStackTrace();
-    }
-}
-
-    public void saveScore(String user, int score) {
-    // This updates the existing player document rather than creating a new one
-    Document query = new Document("username", user);
-    Document update = new Document("$set", new Document("highScore", score)
-                                           .append("lastPlayed", new java.util.Date()));
-    
-    scoreCollection.updateOne(query, update);
-    System.out.println("Score updated in Atlas for " + user);
-}
-
-    public void showLeaderboard() {
-        // Find all, sort by score descending, take the top 5
-        FindIterable<Document> results = scoreCollection.find()
-                                                .sort(descending("score"))
-                                                .limit(5);
-
-        for (Document d : results) {
-            System.out.println(d.getString("name") + ": " + d.getInteger("score"));
+        try {
+            String connectionString = "mongodb+srv://player1:1234@tetrisusers.xk6hppj.mongodb.net/?retryWrites=true&w=majority&appName=tetrisUsers";
+            
+            MongoClientURI uri = new MongoClientURI(connectionString);
+            MongoClient mongoClient = new MongoClient(uri);
+            
+            MongoDatabase database = mongoClient.getDatabase("TetrisGame");
+            scoreCollection = database.getCollection("players");
+            
+            System.out.println("Successfully connected to MongoDB Atlas!");
+            
+        } catch (Exception e) {
+            System.err.println("Connection Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-        // 1. REGISTER: Create a new player
     public void registerPlayer(String user, String pass) {
-        // Check if player already exists first
-        Document existing = scoreCollection.find(new Document("username", user)).first();
+        if (scoreCollection == null) return;
         
+        Document existing = scoreCollection.find(new Document("username", user)).first();
         if (existing == null) {
             Document newPlayer = new Document("username", user)
-                                .append("password", pass) // Note: See security warning below!
+                                .append("password", pass)
                                 .append("highScore", 0);
             scoreCollection.insertOne(newPlayer);
-            System.out.println("Player registered!");
-        } else {
-            System.out.println("Username already taken.");
+            System.out.println("Player registered: " + user);
         }
     }
 
-        // 2. LOGIN: Check if credentials match
     public boolean login(String user, String pass) {
+        if (scoreCollection == null) return false;
+        
         Document query = new Document("username", user).append("password", pass);
         Document player = scoreCollection.find(query).first();
-        
-        return player != null; // Returns true if found, false if not
+        return player != null;
     }
 
-        // 3. UPDATE SCORE: Only if the new score is higher
     public void updateIfHighScore(String user, int newScore) {
-        Document query = new Document("username", user);
-        Document player = scoreCollection.find(query).first();
+        // Guard against null connection or empty user
+        if (scoreCollection == null || user == null || user.isEmpty()) {
+            System.err.println("Cannot update score: DB not ready or user empty.");
+            return;
+        }
 
-        if (player != null) {
-            int currentHighScore = player.getInteger("highScore");
-            if (newScore > currentHighScore) {
-                scoreCollection.updateOne(query, new Document("$set", new Document("highScore", newScore)));
-                System.out.println("New High Score!");
+        try {
+            Document query = new Document("username", user);
+            Document player = scoreCollection.find(query).first();
+
+            if (player != null) {
+                // RULE: Use Number class for safe casting between Integer/Long
+                Object scoreObj = player.get("highScore");
+                int currentHighScore = 0;
+                
+                if (scoreObj instanceof Number) {
+                    currentHighScore = ((Number) scoreObj).intValue();
+                }
+
+                if (newScore > currentHighScore) {
+                    scoreCollection.updateOne(query, new Document("$set", new Document("highScore", newScore)));
+                    System.out.println("DB Updated: " + user + " reached " + newScore);
+                }
             }
+        } catch (Exception e) {
+            System.err.println("Error updating high score: " + e.getMessage());
+        }
+    }
+
+    public void showLeaderboard() {
+        if (scoreCollection == null) return;
+        System.out.println("\n--- LEADERBOARD ---");
+        FindIterable<Document> topPlayers = scoreCollection.find().sort(descending("highScore")).limit(10);
+        for (Document doc : topPlayers) {
+            System.out.println(doc.getString("username") + ": " + doc.get("highScore"));
         }
     }
 }

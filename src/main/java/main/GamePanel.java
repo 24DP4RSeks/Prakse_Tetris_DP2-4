@@ -23,89 +23,67 @@ public class GamePanel extends JPanel implements Runnable {
     private float scaleY = 1.0f;
 
     public GamePanel() {
-
-        // Panel settings
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setBackground(Color.black);
         this.setLayout(null);
-        // Implement KeyListener
         this.addKeyListener(new KeyHandler());
         this.setFocusable(true);
-
         pm = new PlayManager();
 
     }
     public void launchGame() {
         gameThread = new Thread(this);
         gameThread.start();
-
-        // Play the selected music theme
         music.play(5 + pm.currentMusicTheme, true);
         music.loop();
     }
 
     @Override
     public void run() {
-        // Game Loop
         double drawInterval = 1000000000/FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
 
         while(gameThread != null) {
-
             currentTime = System.nanoTime();
-
             delta += (currentTime - lastTime) / drawInterval;
             lastTime = currentTime;
 
-            if (delta >= 1) {
+            if(delta >= 1) {
                 update();
                 repaint();
                 delta--;
             }
         }
-
     }
+
     private void update() {
-        // Ensure this panel has focus for keyboard input
-        if(!this.hasFocus()) {
-            this.requestFocus();
-        }
-        
-        // Handle fullscreen toggle
-        if(KeyHandler.fullscreenPressed) {
-            Main.toggleFullscreen();
-            KeyHandler.fullscreenPressed = false;
-        }
-        
-        // Handle ESC to return to menu (only when NOT paused)
-        if(KeyHandler.menuPressed && pm.gameState == GameState.PLAYING && !pm.isPaused) {
-            System.out.println("[GAMEPANEL] ESC pressed, returning to menu");
-            System.out.flush();
+        // GLOBAL ESCAPE HANDLING
+        if(KeyHandler.menuPressed && pm.gameState != GameState.LOGIN && pm.gameState != GameState.REGISTER) {
             pm.gameState = GameState.MENU;
             pm.menuSelection = 0;
             KeyHandler.menuPressed = false;
             return;
         }
         
-        if(pm.gameState == GameState.MENU) {
-            pm.update();  // Menu always updates for navigation
-        }
-        else if(pm.gameState == GameState.SETTINGS) {
-            pm.update();  // Settings menu updates for navigation
-        }
-        else if(pm.gameState == GameState.PLAYING) {
-            // Always update, even when paused - pausePressed is handled inside updateGame()
+        // UPDATED: Added LOGIN and REGISTER to the list of allowed updates
+        if(pm.gameState == GameState.MENU || 
+           pm.gameState == GameState.SETTINGS || 
+           pm.gameState == GameState.PLAYING || 
+           pm.gameState == GameState.GAME_OVER || 
+           pm.gameState == GameState.EXIT_MINI_GAME ||
+           pm.gameState == GameState.LOGIN || 
+           pm.gameState == GameState.REGISTER) {
             pm.update();
         }
-        else if(pm.gameState == GameState.GAME_OVER) {
-            pm.update();  // Game Over state updates for input
-        }
-        else if(pm.gameState == GameState.EXIT_MINI_GAME) {
-            pm.update();  // Exit mini-game updates for countdown
+
+        if(KeyHandler.fullscreenPressed) {
+            Main.toggleFullscreen();
+            KeyHandler.fullscreenPressed = false;
         }
     }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 

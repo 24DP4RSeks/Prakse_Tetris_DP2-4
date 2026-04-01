@@ -39,6 +39,8 @@ public class GameManager {
             KeyHandler.restartPressed = false;
             return;
         }
+
+        
         
         // Check if ESC pressed to return to menu (only when NOT paused)
         if(KeyHandler.menuPressed) {

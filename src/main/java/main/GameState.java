@@ -1,12 +1,12 @@
 package main.java.main;
 
-
-
 public enum GameState {
     MENU,
+    LOGIN,
+    REGISTER,
     SETTINGS,
     PLAYING,
     PAUSED,
     GAME_OVER,
-    EXIT_MINI_GAME
+    EXIT_MINI_GAME,
 }
