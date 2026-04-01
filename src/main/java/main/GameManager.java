@@ -174,6 +174,8 @@ public class GameManager {
         for(int i = 0; i < pm.staticBlocks.size(); i++) {
             pm.staticBlocks.get(i).draw(g2);
         }
+
+        drawLeaderboard(g2);
         
         // Draw pause menu if paused
         if(pm.isPaused) {
@@ -190,6 +192,32 @@ public class GameManager {
                 pm.comboEffectOn = false;
                 pm.comboEffectCounter = 0;
             }
+        }
+    }
+
+    private void drawLeaderboard(Graphics2D g2) {
+        java.util.List<String> topPlayers = (pm.db != null) ? pm.db.getTopPlayers(10) : java.util.Collections.emptyList();
+
+        int boxX = 20;
+        int boxY = pm.top_y;
+        int boxW = 240;
+        int boxH = 340;
+
+        g2.setColor(new Color(0, 0, 0, 170));
+        g2.fillRect(boxX, boxY, boxW, boxH);
+
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+        g2.drawString("TOP 10 LEADERBOARD", boxX + 10, boxY + 30);
+
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        for (int i = 0; i < Math.min(topPlayers.size(), 10); i++) {
+            g2.drawString((i + 1) + ". " + topPlayers.get(i), boxX + 10, boxY + 60 + (i * 22));
+        }
+
+        if (topPlayers.isEmpty()) {
+            g2.setColor(Color.gray);
+            g2.drawString("No data yet", boxX + 10, boxY + 60);
         }
     }
 

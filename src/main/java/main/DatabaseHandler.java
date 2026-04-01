@@ -81,6 +81,19 @@ public class DatabaseHandler {
         }
     }
 
+    public java.util.List<String> getTopPlayers(int limit) {
+        java.util.List<String> topList = new java.util.ArrayList<>();
+        if (scoreCollection == null) return topList;
+
+        FindIterable<Document> topPlayers = scoreCollection.find().sort(descending("highScore")).limit(limit);
+        for (Document doc : topPlayers) {
+            String name = doc.getString("username");
+            Object score = doc.get("highScore");
+            topList.add(String.format("%s - %s", name, score));
+        }
+        return topList;
+    }
+
     public void showLeaderboard() {
         if (scoreCollection == null) return;
         System.out.println("\n--- LEADERBOARD ---");
