@@ -193,6 +193,36 @@ public class GameManager {
                 pm.comboEffectCounter = 0;
             }
         }
+
+        // Draw control guide in bottom-left corner
+        drawControlGuide(g2);
+    }
+
+    private void drawControlGuide(Graphics2D g2) {
+        int padding = 12;
+        int boxWidth = 260;
+        int boxHeight = 170;
+        int boxX = 20;
+        int boxY = GamePanel.HEIGHT - boxHeight - 20;
+
+        // Background panel
+        g2.setColor(new Color(0, 0, 0, 170));
+        g2.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+        g2.drawString("CONTROLS", boxX + padding, boxY + 28);
+
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        int lineY = boxY + 52;
+        int lineSpacing = 20;
+
+        g2.drawString("← / →  : Move left / right", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("↓      : Soft drop", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("SPACE  : Hard drop", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("UP     : Rotate", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("ESC    : Pause / Menu", boxX + padding, lineY); lineY += lineSpacing;
+        g2.drawString("R      : Restart", boxX + padding, lineY);
     }
 
     private void drawLeaderboard(Graphics2D g2) {
