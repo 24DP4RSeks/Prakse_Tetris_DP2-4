@@ -23,18 +23,44 @@ public class LoginManager {
     }
 
     public void update() {
+        // Allow exiting via ESC key directly
+        if (KeyHandler.menuPressed) {
+            goToMenu();
+            KeyHandler.menuPressed = false;
+            return;
+        }
+
         handleInput();
+
         if (KeyHandler.ePressed) {
-            if (activeField == 2) handleAuth();
+            if (activeField == 2) {
+                handleAuth();
+            } else if (activeField == 3) {
+                goToMenu();
+            }
             KeyHandler.ePressed = false;
         }
     }
+
+    private void goToMenu() {
+        pm.gameState = GameState.MENU;
+        pm.menuSelection = 0;
+        
+        KeyHandler.ePressed = false; 
+        
+        username = "";
+        password = "";
+        activeField = 0;
+        message = "";
+    }
+
 
     private void handleAuth() {
         if (pm.gameState == GameState.LOGIN) {
             if (db.login(username, password)) {
                 pm.currentUsername = this.username; 
                 pm.startGame();
+                KeyHandler.ePressed = false;
             } else {
                 message = "Login Failed";
                 messageColor = Color.red;
@@ -47,8 +73,14 @@ public class LoginManager {
     }
 
     private void handleInput() {
-        if (KeyHandler.upPressed) { activeField = (activeField > 0) ? activeField - 1 : 2; KeyHandler.upPressed = false; }
-        if (KeyHandler.downPressed) { activeField = (activeField < 2) ? activeField + 1 : 0; KeyHandler.downPressed = false; }
+        if (KeyHandler.upPressed) { 
+            activeField = (activeField > 0) ? activeField - 1 : 3; 
+            KeyHandler.upPressed = false; 
+        }
+        if (KeyHandler.downPressed) { 
+            activeField = (activeField < 3) ? activeField + 1 : 0; 
+            KeyHandler.downPressed = false; 
+        }
         
         if (activeField < 2 && KeyHandler.lastTypedChar != Character.MIN_VALUE) {
             char c = KeyHandler.lastTypedChar;
@@ -63,7 +95,6 @@ public class LoginManager {
     }
 
     public void draw(Graphics2D g2) {
-        // ... (Keep your existing draw code, it was looking good!)
         g2.setColor(new Color(0,0,0,200));
         g2.fillRect(0,0, GamePanel.WIDTH, GamePanel.HEIGHT);
 
@@ -83,9 +114,9 @@ public class LoginManager {
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
         g2.setColor(messageColor);
         g2.drawString(message, GamePanel.WIDTH/2 - 150, 550);
-        
-        g2.setColor(Color.gray);
-        g2.drawString("Press M to go back", GamePanel.WIDTH/2 - 100, 650);
+
+        g2.setColor(activeField == 3 ? Color.yellow : Color.white);
+        g2.drawString("> BACK TO MENU <", GamePanel.WIDTH/2 - 100, 600);
 
     }
 

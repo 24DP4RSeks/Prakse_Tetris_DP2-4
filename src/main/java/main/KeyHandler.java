@@ -1,7 +1,6 @@
 package main.java.main;
 
 
-import java.awt.RenderingHints.Key;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -31,11 +30,10 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_LEFT) leftPressed = true;
         if(code == KeyEvent.VK_RIGHT) rightPressed = true;
         if(code == KeyEvent.VK_ENTER) ePressed = true;
-        if(code == KeyEvent.VK_F) fullscreenPressed = true;
-        if(code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER) spacePressed = true;
+        if(code == KeyEvent.VK_F11) fullscreenPressed = true;
+        if(code == KeyEvent.VK_SPACE) spacePressed = true;
         if(code == KeyEvent.VK_ESCAPE) pausePressed = !pausePressed;
         if(code == KeyEvent.VK_R) restartPressed = true;
-        if(code == KeyEvent.VK_BACK_SLASH) menuPressed = true;
     }
 
     @Override
@@ -47,9 +45,8 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_RIGHT ) rightPressed = false;
         if(code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER) spacePressed = false;
         if(code == KeyEvent.VK_ENTER) ePressed = false;
-        if(code == KeyEvent.VK_ESCAPE) menuPressed = false;
         if(code == KeyEvent.VK_P) pausePressed = false;
-        if(code == KeyEvent.VK_F) fullscreenPressed = false;
+        if(code == KeyEvent.VK_F11) fullscreenPressed = false;
         if(code == KeyEvent.VK_R) restartPressed = false;
     }
 
