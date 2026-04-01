@@ -103,7 +103,7 @@ public class SettingsManager {
         
         g2.setColor(Color.gray);
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-        g2.drawString("Use W/UP or S/DOWN to navigate, E to toggle/select", GamePanel.WIDTH/2 - 280, 550);
+        g2.drawString("Use ARRUP / ARRDOWN to navigate, ENTER to toggle/select", GamePanel.WIDTH/2 - 280, 550);
 
     }
 }

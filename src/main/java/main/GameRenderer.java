@@ -35,6 +35,7 @@ public class GameRenderer {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString("NEXT", sx + 60, sy + 60);
 
+
         g2.drawRoundRect(sx, pm.top_y + 140, 200, 250, 15, 15); // Made box slightly taller
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("SCORE", sx + 45, pm.top_y + 130);
@@ -106,6 +107,8 @@ public class GameRenderer {
             }
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
         }
+
+        
 
         // 5. PAUSE MENU
         if (pm.isPaused) {
