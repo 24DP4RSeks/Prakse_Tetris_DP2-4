@@ -130,15 +130,6 @@ public class LoginManager {
         g2.drawString(val + (selected && (System.currentTimeMillis() / 500 % 2 == 0) ? "|" : ""), GamePanel.WIDTH/2 - 40, y);
     }
 
-    private Color getColor(Color original, boolean colorblindMode) {
-        if (!colorblindMode) {
-            return original;
-        }
-        // Convert to grayscale using luminance formula
-        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
-        return new Color(gray, gray, gray);
-    }
-
     public void reset() {
         username = ""; password = ""; message = ""; activeField = 0;
     }

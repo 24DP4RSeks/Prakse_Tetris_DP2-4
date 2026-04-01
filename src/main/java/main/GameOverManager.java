@@ -94,13 +94,4 @@ public class GameOverManager {
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         g2.drawString("Use UP / DOWN to switch, SPACE or ENTER to select", GamePanel.WIDTH/2 - 215, menuY + optionSpacing + 40);
     }
-
-    private Color getColor(Color original, boolean colorblindMode) {
-        if (!colorblindMode) {
-            return original;
-        }
-        // Convert to grayscale using luminance formula
-        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
-        return new Color(gray, gray, gray);
-    }
 }

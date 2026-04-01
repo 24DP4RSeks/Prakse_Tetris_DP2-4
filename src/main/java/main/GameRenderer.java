@@ -12,7 +12,7 @@ public class GameRenderer {
     
     public static void drawGame(PlayManager pm, Graphics2D g2) {
         // 1. DRAW BACKGROUND & UI ELEMENTS
-        g2.setColor(getColorForMode(pm, Color.white));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.setStroke(new BasicStroke(4f));
         g2.drawRoundRect(pm.left_x - 4, pm.top_y, pm.WIDTH + 8, pm.HEIGHT + 8, 15, 15);
 
@@ -29,7 +29,7 @@ public class GameRenderer {
        
 
         // Draw Sidebar Boxes
-        g2.setColor(getColorForMode(pm, Color.white));
+        g2.setColor(ColorManager.getColor(Color.white));
         int sx = pm.right_x + 100;
         int sy = pm.bottom_y - 200;
         g2.drawRoundRect(sx, sy, 200, 200, 15, 15);
@@ -50,13 +50,13 @@ public class GameRenderer {
         g2.drawString("LINES: " + pm.lines, textX, textY); textY += 50;
 
         if (pm.combo > 0) {
-            g2.setColor(pm.combo >= 2 ? getColorForMode(pm, Color.yellow) : getColorForMode(pm, Color.white));
+            g2.setColor(pm.combo >= 2 ? ColorManager.getColor(Color.yellow) : ColorManager.getColor(Color.white));
             g2.drawString("COMBO: x" + pm.combo, textX, textY);
             textY += 50;
         }
         
 
-        g2.setColor(getColorForMode(pm, Color.white));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.drawString("PTS: " + pm.score, textX, textY);
 
         // 2. DRAW MINOS
@@ -75,7 +75,7 @@ public class GameRenderer {
         // Note: Using pm.comboEffectCounter as the generic timer for the red line effect
         if (pm.effectCounterOn) {
             pm.comboEffectCounter++; // Using existing counter
-            g2.setColor(getColorForMode(pm, Color.red));
+            g2.setColor(ColorManager.getColor(Color.red));
             for (int i = 0; i < pm.effectY.size(); i++) {
                 g2.fillRect(pm.left_x, pm.effectY.get(i), pm.WIDTH, Block.SIZE);
             }
@@ -102,7 +102,7 @@ public class GameRenderer {
                 g2.drawString(comboText, comboX + 2, comboY + 2);
                 
                 // Main Text
-                g2.setColor(getColorForMode(pm, Color.yellow));
+                g2.setColor(ColorManager.getColor(Color.yellow));
                 g2.drawString(comboText, comboX, comboY);
                 
                 if (pm.comboEffectCounter >= 60) {
@@ -136,7 +136,7 @@ public class GameRenderer {
 
         g2.setColor(Color.black);
         g2.fillRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
-        g2.setColor(getColorForMode(pm, Color.white));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.setStroke(new BasicStroke(3f));
         g2.drawRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
 
@@ -154,20 +154,12 @@ public class GameRenderer {
         for (int i = 0; i < pauseOptions.length; i++) {
             int optionY = menuY + 150 + (i * 60);
             if (pm.pauseMenuSelection == i) {
-                g2.setColor(getColorForMode(pm, Color.yellow));
+                g2.setColor(ColorManager.getColor(Color.yellow));
                 g2.drawString("> " + pauseOptions[i], GamePanel.WIDTH / 2 - 120, optionY);
             } else {
-                g2.setColor(getColorForMode(pm, Color.white));
+                g2.setColor(ColorManager.getColor(Color.white));
                 g2.drawString("  " + pauseOptions[i], GamePanel.WIDTH / 2 - 120, optionY);
             }
         }
-    }
-
-    public static Color getColorForMode(PlayManager pm, Color c) {
-        if (pm.colorblindMode) {
-            int gray = (int) (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114);
-            return new Color(gray, gray, gray);
-        }
-        return c;
     }
 }

@@ -77,7 +77,7 @@ public class MenuManager {
     }
 
     public void draw(Graphics2D g2) {
-        g2.setColor(getColor(Color.white, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 80));
         g2.drawString("TETRIS", GamePanel.WIDTH/2 - 150, 150);
 
@@ -85,32 +85,23 @@ public class MenuManager {
 
         if (ap_hasLoggedInUser(pm.currentUsername)) {
             g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 25));
-            g2.setColor(getColor(Color.green, pm.colorblindMode));
+            g2.setColor(ColorManager.getColor(Color.green));
             g2.drawString("Welcome: " + pm.currentUsername, GamePanel.WIDTH/2 - 140, 220);
         }
 
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
         for(int i = 0; i < options.length; i++) {
             if(pm.menuSelection == i) {
-                g2.setColor(getColor(Color.yellow, pm.colorblindMode));
+                g2.setColor(ColorManager.getColor(Color.yellow));
                 g2.drawString("> " + options[i], GamePanel.WIDTH/2 - 150, 280 + (i * 65));
             } else {
-                g2.setColor(getColor(Color.white, pm.colorblindMode));
+                g2.setColor(ColorManager.getColor(Color.white));
                 g2.drawString("  " + options[i], GamePanel.WIDTH/2 - 150, 280 + (i * 65));
             }
         }
 
-        g2.setColor(getColor(Color.gray, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.gray));
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
         g2.drawString("Use ARRUP or ARRDOWN to navigate, ENTER to select", GamePanel.WIDTH/2 - 250, 650);
-    }
-
-    private Color getColor(Color original, boolean colorblindMode) {
-        if (!colorblindMode) {
-            return original;
-        }
-        // Convert to grayscale using luminance formula
-        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
-        return new Color(gray, gray, gray);
     }
 }

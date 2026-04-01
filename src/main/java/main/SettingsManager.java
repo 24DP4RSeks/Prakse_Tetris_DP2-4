@@ -48,6 +48,7 @@ public class SettingsManager {
             } else if(pm.settingsSelection == 2) {
                 // Toggle colorblind mode
                 pm.colorblindMode = !pm.colorblindMode;
+                ColorManager.setColorblindMode(pm.colorblindMode);
             } else if(pm.settingsSelection == 3) {
                 // Back to menu
                 pm.gameState = GameState.MENU;
@@ -105,14 +106,5 @@ public class SettingsManager {
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
         g2.drawString("Use ARRUP / ARRDOWN to navigate, ENTER to toggle/select", GamePanel.WIDTH/2 - 280, 550);
 
-    }
-
-    private Color getColor(Color original, boolean colorblindMode) {
-        if (!colorblindMode) {
-            return original;
-        }
-        // Convert to grayscale using luminance formula
-        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
-        return new Color(gray, gray, gray);
     }
 }

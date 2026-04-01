@@ -140,7 +140,7 @@ public class GameManager {
 
     public void draw(Graphics2D g2) {
         // Draw the play area
-        g2.setColor(getColor(Color.white, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.setStroke(new BasicStroke(4f));
         g2.drawRect(pm.left_x - 4, pm.top_y - 4, pm.WIDTH + 8, pm.HEIGHT + 8);
         
@@ -149,7 +149,7 @@ public class GameManager {
         int y = pm.bottom_y - 200;
         g2.drawRect(x, y, 200, 200);
         g2.setFont(new Font("Arial", Font.PLAIN, 30));
-        g2.setColor(getColor(Color.white, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.drawString("NEXT", x + 60, y + 60);
         
         // Draw score area
@@ -194,15 +194,6 @@ public class GameManager {
                 pm.comboEffectCounter = 0;
             }
         }
-    }
-
-    private Color getColor(Color original, boolean colorblindMode) {
-        if (!colorblindMode) {
-            return original;
-        }
-        // Convert to grayscale using luminance formula
-        int gray = (int)(original.getRed() * 0.299 + original.getGreen() * 0.587 + original.getBlue() * 0.114);
-        return new Color(gray, gray, gray);
     }
 
     private void drawControlGuide(Graphics2D g2) {
