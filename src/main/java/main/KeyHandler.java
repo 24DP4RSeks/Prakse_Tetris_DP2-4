@@ -17,11 +17,19 @@ public class KeyHandler implements KeyListener{
     
     public static char lastTypedChar = Character.MIN_VALUE;
 
+    /**
+     * funkcija keyTyped pieņem KeyEvent tipa vērtību e un atgriež void tipa vērtību null.
+     * Šī funkcija saglabā pēdēju taustiņu simbolu mainīgajā lastTypedChar.
+     */
     @Override
     public void keyTyped(KeyEvent e) {
         lastTypedChar = e.getKeyChar();
     }
 
+    /**
+     * funkcija keyPressed pieņem KeyEvent tipa vērtību e un atgriež void tipa vērtību null.
+     * Šī funkcija iestata attiecīgo taustiņu nospiestu (true) stāvokli.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
@@ -36,6 +44,10 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_R) restartPressed = true;
     }
 
+    /**
+     * funkcija keyReleased pieņem KeyEvent tipa vērtību e un atgriež void tipa vērtību null.
+     * Šī funkcija atbrīvo atbilstošo taustiņu (false) stāvokli.
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();

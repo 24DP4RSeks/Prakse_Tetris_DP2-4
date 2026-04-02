@@ -14,10 +14,18 @@ import java.awt.BasicStroke;
 public class GameManager {
     private PlayManager pm;
 
+    /**
+     * funkcija GameManager pieņem PlayManager tipa vērtību pm un atgriež void tipa vērtību null.
+     * Šī konstruktorfunkcija inicializē GameManager ar PlayManager saiti.
+     */
     public GameManager(PlayManager pm) {
         this.pm = pm;
     }
 
+    /**
+     * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija apstrādā tastatūras komandas, pauzi, restartu, un pašreizējā mino loģiku.
+     */
     public void update() {
         try {
             // Check if 1 button pressed to toggle pause
@@ -90,6 +98,10 @@ public class GameManager {
         }
     }
 
+    /**
+     * funkcija updatePauseMenu pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija apstrādā pauzes izvēlnes navigāciju un izvēli.
+     */
     private void updatePauseMenu() {
         // Navigation - must check and clear immediately
         if(KeyHandler.upPressed) {
@@ -109,6 +121,10 @@ public class GameManager {
         }
     }
 
+    /**
+     * funkcija executePauseMenuSelection pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija izpilda pauzes izvēlnes atzīmētās opcijas darbības.
+     */
     private void executePauseMenuSelection() {
         if(pm.pauseMenuSelection == 0) {
             // Resume
@@ -138,6 +154,10 @@ public class GameManager {
         }
     }
 
+    /**
+     * funkcija draw pieņem Graphics2D tipa vērtību g2 un atgriež void tipa vērtību null.
+     * Šī funkcija zīmē spēles laukumu, mino, blokus un GUI informāciju.
+     */
     public void draw(Graphics2D g2) {
         // Draw the play area
         g2.setColor(ColorManager.getColor(Color.white));

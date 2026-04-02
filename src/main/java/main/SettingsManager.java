@@ -9,10 +9,18 @@ import java.awt.Color;
 public class SettingsManager {
     private PlayManager pm;
 
+    /**
+     * funkcija SettingsManager pieņem PlayManager tipa vērtību pm un atgriež void tipa vērtību null.
+     * Šī konstruktorfunkcija inicializē iestatījumu pārvaldnieku ar PlayManager objektu.
+     */
     public SettingsManager(PlayManager pm) {
         this.pm = pm;
     }
 
+    /**
+     * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija pārvalda iestatījumu navigāciju un attiecīgo opciju aktivizēšanu.
+     */
     public void update() {
         // Handle settings navigation
         if(KeyHandler.upPressed) {
@@ -58,6 +66,10 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * funkcija draw pieņem Graphics2D tipa vērtību g2 un atgriež void tipa vērtību null.
+     * Šī funkcija zīmē iestatījumu ekrānu ar pieejamajām opcijām.
+     */
     public void draw(Graphics2D g2) {
         g2.setColor(ColorManager.getColor(Color.white));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));

@@ -22,6 +22,10 @@ public class GamePanel extends JPanel implements Runnable {
     private float scaleX = 1.0f;
     private float scaleY = 1.0f;
 
+    /**
+     * funkcija GamePanel pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī konstruktorfunkcija iestata paneli, pievieno KeyHandler un inicializē PlayManager.
+     */
     public GamePanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setBackground(Color.black);
@@ -31,6 +35,10 @@ public class GamePanel extends JPanel implements Runnable {
         pm = new PlayManager();
 
     }
+    /**
+     * funkcija launchGame pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija uzsāk spēles vītni un atskaņo mūziku.
+     */
     public void launchGame() {
         gameThread = new Thread(this);
         gameThread.start();
@@ -38,6 +46,10 @@ public class GamePanel extends JPanel implements Runnable {
         music.loop();
     }
 
+    /**
+     * funkcija run pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija izpilda spēles cilpu ar fiksētu FPS, atjaunojot stāvokli un pārbildējot.
+     */
     @Override
     public void run() {
         double drawInterval = 1000000000/FPS;
@@ -65,6 +77,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija apstrādā globālās komandas un izsauc PlayManager atjauninājumu.
+     */
     private void update() {
         // GLOBAL ESCAPE HANDLING
         if(KeyHandler.menuPressed && pm.gameState != GameState.LOGIN && pm.gameState != GameState.REGISTER) {
@@ -91,6 +107,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * funkcija paintComponent pieņem Graphics tipa vērtību g un atgriež void tipa vērtību null.
+     * Šī funkcija zīmē spēles atveidi uz ekrāna ar attiecīgo mērogošanu.
+     */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 

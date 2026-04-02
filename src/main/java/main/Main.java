@@ -10,6 +10,10 @@ public class Main{
         public static boolean isFullscreen = false;
         private static GraphicsDevice device;
 
+        /**
+         * funkcija main pieņem String[] tipa vērtību args un atgriež void tipa vērtību null.
+         * Šī funkcija inicializē logu, pievieno GamePanel un palaiž spēli.
+         */
         public static void main(String[] args){
             
                 window = new JFrame("Simple Tetris");
@@ -36,6 +40,10 @@ public class Main{
                 
         }
         
+        /**
+         * funkcija toggleFullscreen pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+         * Šī funkcija pārslēdz starp pilnekrāna un loga režīmu.
+         */
         public static void toggleFullscreen() {
             if(isFullscreen) {
                 // Exit fullscreen

@@ -63,6 +63,10 @@ public class PlayManager {
     public ExitMiniGameManager exitMiniGameManager;
     public LoginManager loginManager; // Added this
 
+    /**
+     * funkcija PlayManager pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī konstruktorfunkcija inicializē spēles laukumu, datu bāzes savienojumu un pārvaldniekus.
+     */
     public PlayManager() {
         left_x = (GamePanel.WIDTH - WIDTH) / 2;
         right_x = left_x + WIDTH;
@@ -87,6 +91,10 @@ public class PlayManager {
         loginManager = new LoginManager(this); // Initialized
     }
 
+    /**
+     * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija vada spēles stāvokļa atkārtotu atjaunošanu (menu, settings, playing utt.).
+     */
     public void update() {
         switch(gameState) {
             case MENU: menuManager.update(); break;
@@ -99,11 +107,19 @@ public class PlayManager {
         }
     }
 
+    /**
+     * funkcija startGame pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija uzsāk spēli, iestata stāvokli uz PLAYING un atiestata datu laukumu.
+     */
     public void startGame() {
         gameState = GameState.PLAYING;
         GameResetManager.resetGame(this);
     }
 
+    /**
+     * funkcija draw pieņem Graphics2D tipa vērtību g2 un atgriež void tipa vērtību null.
+     * Šī funkcija attēlo izvēlētā stāvokļa grafiku.
+     */
     public void draw(Graphics2D g2) {
         switch(gameState) {
             case MENU: menuManager.draw(g2); break;

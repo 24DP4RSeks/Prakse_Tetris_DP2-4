@@ -12,6 +12,10 @@ public class DatabaseHandler {
 
     private MongoCollection<Document> scoreCollection;
 
+    /**
+     * funkcija connect pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija izveido savienojumu ar MongoDB Atlas.
+     */
     public void connect() {
         try {
             String connectionString = "mongodb+srv://player1:1234@tetrisusers.xk6hppj.mongodb.net/?retryWrites=true&w=majority&appName=tetrisUsers";
@@ -30,6 +34,10 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * funkcija registerPlayer pieņem String tipa vērtību user un String tipa vērtību pass un atgriež void tipa vērtību null.
+     * Šī funkcija reģistrē jaunu lietotāju MongoDB kolekcijā, ja lietotājs vēl nepastāv.
+     */
     public void registerPlayer(String user, String pass) {
         if (scoreCollection == null) return;
         
@@ -43,6 +51,10 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * funkcija login pieņem String tipa vērtību user un String tipa vērtību pass un atgriež boolean tipa vērtību.
+     * Šī funkcija pārbauda, vai norādītie akreditācijas dati ir pareizi.
+     */
     public boolean login(String user, String pass) {
         if (scoreCollection == null) return false;
         
@@ -51,6 +63,10 @@ public class DatabaseHandler {
         return player != null;
     }
 
+    /**
+     * funkcija updateIfHighScore pieņem String tipa vērtību user un int tipa vērtību newScore un atgriež void tipa vērtību null.
+     * Šī funkcija atjaunina spēlētāja rekordpunktu, ja jauns rezultāts ir lielāks par pašreizējo.
+     */
     public void updateIfHighScore(String user, int newScore) {
         // Guard against null connection or empty user
         if (scoreCollection == null || user == null || user.isEmpty()) {
@@ -84,6 +100,10 @@ public class DatabaseHandler {
     private java.util.List<String> cachedTopPlayers = new java.util.ArrayList<>();
     private long lastLeaderboardFetchTime = 0;
 
+    /**
+     * funkcija getTopPlayers pieņem int tipa vērtību limit un atgriež java.util.List<String> tipa vērtību topList.
+     * Šī funkcija atgriež labāko spēlētāju sarakstu un kešē to uz vienu sekundi.
+     */
     public java.util.List<String> getTopPlayers(int limit) {
         // Cache the leaderboard for 1 second to avoid repeated DB roundtrips each frame
         long now = System.currentTimeMillis();
@@ -106,6 +126,10 @@ public class DatabaseHandler {
         return topList;
     }
 
+    /**
+     * funkcija showLeaderboard pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija izvada konsolē top 10 spēlētāju sarakstu.
+     */
     public void showLeaderboard() {
         if (scoreCollection == null) return;
         System.out.println("\n--- LEADERBOARD ---");
