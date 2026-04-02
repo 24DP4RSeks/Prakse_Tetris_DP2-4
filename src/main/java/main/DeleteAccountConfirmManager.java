@@ -88,6 +88,6 @@ public class DeleteAccountConfirmManager {
 
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         g2.setColor(ColorManager.getColor(Color.white));
-        g2.drawString("Use LEFT/RIGHT to choose, ENTER to confirm, ESC to cancel", menuX + 20, menuY + menuHeight - 20);
+        g2.drawString("Use LEFT/RIGHT to choose, ENTER to confirm", menuX + 20, menuY + menuHeight - 20);
     }
 }
