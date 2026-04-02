@@ -81,7 +81,16 @@ public class DatabaseHandler {
         }
     }
 
+    private java.util.List<String> cachedTopPlayers = new java.util.ArrayList<>();
+    private long lastLeaderboardFetchTime = 0;
+
     public java.util.List<String> getTopPlayers(int limit) {
+        // Cache the leaderboard for 1 second to avoid repeated DB roundtrips each frame
+        long now = System.currentTimeMillis();
+        if (scoreCollection != null && now - lastLeaderboardFetchTime < 1000 && !cachedTopPlayers.isEmpty()) {
+            return new java.util.ArrayList<>(cachedTopPlayers);
+        }
+
         java.util.List<String> topList = new java.util.ArrayList<>();
         if (scoreCollection == null) return topList;
 
@@ -91,6 +100,9 @@ public class DatabaseHandler {
             Object score = doc.get("highScore");
             topList.add(String.format("%s - %s", name, score));
         }
+
+        cachedTopPlayers = new java.util.ArrayList<>(topList);
+        lastLeaderboardFetchTime = now;
         return topList;
     }
 

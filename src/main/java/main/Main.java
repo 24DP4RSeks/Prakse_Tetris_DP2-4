@@ -44,7 +44,7 @@ public class Main{
                 device.setFullScreenWindow(null);
                 window.setVisible(true);
                 isFullscreen = false;
-            } else {
+            } else { 
                 // Enter fullscreen
                 window.dispose();
                 window.setUndecorated(true);

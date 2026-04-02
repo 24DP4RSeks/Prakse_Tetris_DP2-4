@@ -54,6 +54,13 @@ public class GamePanel extends JPanel implements Runnable {
                 update();
                 repaint();
                 delta--;
+            } else {
+                // Yield CPU when waiting for next frame to reduce busy-wait and keep input responsive
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
