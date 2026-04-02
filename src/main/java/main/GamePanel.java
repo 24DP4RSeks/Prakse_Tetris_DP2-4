@@ -96,6 +96,7 @@ public class GamePanel extends JPanel implements Runnable {
            pm.gameState == GameState.PLAYING || 
            pm.gameState == GameState.GAME_OVER || 
            pm.gameState == GameState.EXIT_MINI_GAME ||
+           pm.gameState == GameState.DELETE_ACCOUNT_CONFIRM ||
            pm.gameState == GameState.LOGIN || 
            pm.gameState == GameState.REGISTER) {
             pm.update();

@@ -13,7 +13,7 @@ public class MenuManager {
 
     private String[] getOptions() {
         if (!pm.isGuest && ap_hasLoggedInUser(pm.currentUsername)) {
-            return new String[] {"PLAY", "LOGOUT", "SETTINGS", "EXIT"};
+            return new String[] {"PLAY", "LOGOUT", "DELETE ACCOUNT", "SETTINGS", "EXIT"};
         }
         return new String[] {"REGISTER", "LOGIN", "GUEST PLAY", "SETTINGS", "EXIT"};
     }
@@ -62,6 +62,10 @@ public class MenuManager {
                     pm.currentUsername = "Guest";
                     pm.gameState = GameState.MENU;
                     pm.menuSelection = 0;
+                    break;
+                case "DELETE ACCOUNT":
+                    pm.confirmSelection = 0;
+                    pm.gameState = GameState.DELETE_ACCOUNT_CONFIRM;
                     break;
                 case "SETTINGS":
                     pm.gameState = GameState.SETTINGS;

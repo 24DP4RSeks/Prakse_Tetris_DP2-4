@@ -61,6 +61,7 @@ public class PlayManager {
     public GameManager gameManager;
     public GameOverManager gameOverManager;
     public ExitMiniGameManager exitMiniGameManager;
+    public DeleteAccountConfirmManager deleteAccountConfirmManager;
     public LoginManager loginManager; // Added this
 
     /**
@@ -88,6 +89,7 @@ public class PlayManager {
         gameManager = new GameManager(this);
         gameOverManager = new GameOverManager(this);
         exitMiniGameManager = new ExitMiniGameManager(this);
+        deleteAccountConfirmManager = new DeleteAccountConfirmManager(this);
         loginManager = new LoginManager(this); // Initialized
     }
 
@@ -102,6 +104,7 @@ public class PlayManager {
             case PLAYING: gameManager.update(); break;
             case GAME_OVER: gameOverManager.update(); break;
             case EXIT_MINI_GAME: exitMiniGameManager.update(); break;
+            case DELETE_ACCOUNT_CONFIRM: deleteAccountConfirmManager.update(); break;
             case LOGIN:
             case REGISTER: loginManager.update(); break; // Added routing
         }
@@ -127,6 +130,7 @@ public class PlayManager {
             case PLAYING: gameManager.draw(g2); break;
             case GAME_OVER: gameOverManager.draw(g2); break;
             case EXIT_MINI_GAME: exitMiniGameManager.draw(g2); break;
+            case DELETE_ACCOUNT_CONFIRM: deleteAccountConfirmManager.draw(g2); break;
             case LOGIN:
             case REGISTER: loginManager.draw(g2); break; // Added routing
         }

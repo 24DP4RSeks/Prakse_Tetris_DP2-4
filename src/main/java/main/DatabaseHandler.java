@@ -130,6 +130,28 @@ public class DatabaseHandler {
      * funkcija showLeaderboard pieņem void tipa vērtību null un atgriež void tipa vērtību null.
      * Šī funkcija izvada konsolē top 10 spēlētāju sarakstu.
      */
+    /**
+     * funkcija deleteAccount pieņem String tipa vērtību user un atgriež void tipa vērtību null.
+     * Šī funkcija izdzēš lietotāja kontu no MongoDB kolekcijas.
+     */
+    public void deleteAccount(String user) {
+        if (scoreCollection == null || user == null || user.isBlank()) {
+            System.err.println("Cannot delete account: DB not ready or invalid user.");
+            return;
+        }
+
+        try {
+            scoreCollection.deleteOne(new Document("username", user));
+            System.out.println("Deleted account: " + user);
+        } catch (Exception e) {
+            System.err.println("Error deleting account: " + e.getMessage());
+        }
+    }
+
+    /**
+     * funkcija showLeaderboard pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija izvada konsolē top 10 spēlētāju sarakstu.
+     */
     public void showLeaderboard() {
         if (scoreCollection == null) return;
         System.out.println("\n--- LEADERBOARD ---");

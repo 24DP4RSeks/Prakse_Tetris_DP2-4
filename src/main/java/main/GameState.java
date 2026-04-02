@@ -9,4 +9,5 @@ public enum GameState {
     PAUSED,
     GAME_OVER,
     EXIT_MINI_GAME,
+    DELETE_ACCOUNT_CONFIRM,
 }
