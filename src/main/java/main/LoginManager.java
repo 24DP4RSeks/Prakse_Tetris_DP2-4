@@ -100,7 +100,7 @@ public class LoginManager {
         g2.fillRect(0,0, GamePanel.WIDTH, GamePanel.HEIGHT);
 
         String title = pm.gameState == GameState.LOGIN ? "LOGIN" : "REGISTER";
-        g2.setColor(getColor(Color.white, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
         g2.drawString(title, GamePanel.WIDTH/2 - 100, 150);
 
@@ -108,24 +108,24 @@ public class LoginManager {
         drawField(g2, "Password:", "*".repeat(password.length()), 350, activeField == 1);
 
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
-        g2.setColor(activeField == 2 ? getColor(Color.yellow, pm.colorblindMode) : getColor(Color.white, pm.colorblindMode));
+        g2.setColor(activeField == 2 ? ColorManager.getColor(Color.yellow) : ColorManager.getColor(Color.white));
         String btnText = pm.gameState == GameState.LOGIN ? "> LOGIN <" : "> REGISTER <";
         g2.drawString(btnText, GamePanel.WIDTH/2 - 100, 480);
 
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-        g2.setColor(getColor(messageColor, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(messageColor));
         g2.drawString(message, GamePanel.WIDTH/2 - 150, 550);
 
-        g2.setColor(activeField == 3 ? getColor(Color.yellow, pm.colorblindMode) : getColor(Color.white, pm.colorblindMode));
+        g2.setColor(activeField == 3 ? ColorManager.getColor(Color.yellow) : ColorManager.getColor(Color.white));
         g2.drawString("> BACK TO MENU <", GamePanel.WIDTH/2 - 100, 600);
 
     }
 
     private void drawField(Graphics2D g2, String label, String val, int y, boolean selected) {
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 25));
-        g2.setColor(getColor(Color.white, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.drawString(label, GamePanel.WIDTH/2 - 250, y);
-        g2.setColor(selected ? getColor(Color.yellow, pm.colorblindMode) : getColor(Color.white, pm.colorblindMode));
+        g2.setColor(selected ? ColorManager.getColor(Color.yellow) : ColorManager.getColor(Color.white));
         g2.drawRect(GamePanel.WIDTH/2 - 50, y - 30, 300, 40);
         g2.drawString(val + (selected && (System.currentTimeMillis() / 500 % 2 == 0) ? "|" : ""), GamePanel.WIDTH/2 - 40, y);
     }

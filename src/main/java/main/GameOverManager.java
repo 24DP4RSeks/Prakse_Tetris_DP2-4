@@ -53,22 +53,22 @@ public class GameOverManager {
         g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
         
-        g2.setColor(getColor(Color.red, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.red));
         g2.setFont(new Font("Comic Sans MS", Font.BOLD, 60));
         g2.drawString("GAME OVER", GamePanel.WIDTH/2 - 200, 250);
         
-        g2.setColor(getColor(Color.white, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.white));
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         g2.drawString("Player: " + pm.currentUsername, GamePanel.WIDTH/2 - 100, 320);
         g2.drawString("Score: " + pm.score, GamePanel.WIDTH/2 - 80, 370);
         
         // Guest Warning
         if (pm.isGuest) {
-            g2.setColor(getColor(Color.orange, pm.colorblindMode));
+            g2.setColor(ColorManager.getColor(Color.orange));
             g2.setFont(new Font("Comic Sans MS", Font.ITALIC, 20));
             g2.drawString("(Guest scores are not saved to Leaderboard)", GamePanel.WIDTH/2 - 210, 420);
         } else {
-            g2.setColor(getColor(Color.green, pm.colorblindMode));
+                
             g2.setFont(new Font("Comic Sans MS", Font.ITALIC, 20));
             g2.drawString("Score synced to Cloud!", GamePanel.WIDTH/2 - 110, 420);
         }
@@ -79,18 +79,18 @@ public class GameOverManager {
 
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 28));
         if (gameOverSelection == 0) {
-            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
+            g2.setColor(ColorManager.getColor(Color.yellow));
             g2.drawString("> RETRY", GamePanel.WIDTH/2 - 100, menuY);
-            g2.setColor(getColor(Color.white, pm.colorblindMode));
+            g2.setColor(ColorManager.getColor(Color.white));
             g2.drawString("  MENU", GamePanel.WIDTH/2 - 100, menuY + optionSpacing);
         } else {
-            g2.setColor(getColor(Color.white, pm.colorblindMode));
+            g2.setColor(ColorManager.getColor(Color.white));
             g2.drawString("  RETRY", GamePanel.WIDTH/2 - 100, menuY);
-            g2.setColor(getColor(Color.yellow, pm.colorblindMode));
+            g2.setColor(ColorManager.getColor(Color.yellow));
             g2.drawString("> MENU", GamePanel.WIDTH/2 - 100, menuY + optionSpacing);
         }
 
-        g2.setColor(getColor(Color.lightGray, pm.colorblindMode));
+        g2.setColor(ColorManager.getColor(Color.lightGray));
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         g2.drawString("Use UP / DOWN to switch, SPACE or ENTER to select", GamePanel.WIDTH/2 - 215, menuY + optionSpacing + 40);
     }
