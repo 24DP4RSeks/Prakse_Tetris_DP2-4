@@ -60,7 +60,10 @@ public class LoginManager {
             if (db.login(username, password)) {
                 pm.currentUsername = this.username;
                 pm.isGuest = false;
-                pm.startGame();
+                pm.gameState = GameState.MENU;
+                pm.menuSelection = 0;
+                message = "Welcome " + username + "!";
+                messageColor = Color.green;
                 KeyHandler.ePressed = false;
             } else {
                 message = "Login Failed";

@@ -8,10 +8,18 @@ import java.awt.BasicStroke;
 public class DeleteAccountConfirmManager {
     private PlayManager pm;
 
+    /**
+     * funkcija DeleteAccountConfirmManager pieņem PlayManager tipa vērtību pm un atgriež void tipa vērtību null.
+     * Šī konstruktorfunkcija inicializē DeleteAccountConfirmManager ar PlayManager referenci.
+     */
     public DeleteAccountConfirmManager(PlayManager pm) {
         this.pm = pm;
     }
 
+    /**
+     * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
+     * Šī funkcija apstrādā apstiprināšanas izvēlnes tastatūras ievadi un veic konta dzēšanu vai atcelšanu.
+     */
     public void update() {
         // ESC cancels and returns to menu with existing user session
         if(KeyHandler.menuPressed) {
