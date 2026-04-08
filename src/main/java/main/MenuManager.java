@@ -106,6 +106,6 @@ public class MenuManager {
 
         g2.setColor(ColorManager.getColor(Color.gray));
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-        g2.drawString("Use ARRUP or ARRDOWN to navigate, ENTER to select", GamePanel.WIDTH/2 - 250, 650);
+        g2.drawString("Use ARRUP or ARRDOWN to navigate, ENTER to select. F11 for fullscreen", GamePanel.WIDTH/2 - 250, 650);
     }
 }
