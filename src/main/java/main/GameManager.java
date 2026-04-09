@@ -9,10 +9,12 @@ import main.java.mino.*;
 
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 
 public class GameManager {
     private PlayManager pm;
+    
 
     /**
      * funkcija GameManager pieņem PlayManager tipa vērtību pm un atgriež void tipa vērtību null.
@@ -175,10 +177,11 @@ public class GameManager {
         // Draw score area
         g2.drawRect(x, pm.top_y, 250, 300);
         x += 40;
-        y = pm.top_y + 90;
+        y = pm.top_y + 50;
         g2.drawString("LEVEL: " + pm.level, x, y); y += 70;
         g2.drawString("LINES: " + pm.lines, x, y); y += 70;
-        g2.drawString("SCORE: " + pm.score, x, y);
+        g2.drawString("SCORE: " + pm.score, x, y); y += 70;
+        g2.drawString("COMBO: x" + pm.combo, x, y);
         
         // Draw the currentMino
         if(pm.currentMino != null) {
@@ -204,12 +207,66 @@ public class GameManager {
         }
         
         // Draw effect
-        if(pm.comboEffectOn) {
+        if (pm.effectCounterOn) {
+            pm.lineEffectCounter++; // Use the new dedicated counter
             g2.setColor(ColorManager.getColor(Color.red));
-            g2.setFont(new Font("Arial", Font.BOLD, 50));
-            g2.drawString("COMBO x" + pm.combo, pm.left_x + 50, pm.top_y + 200);
+            for (int i = 0; i < pm.effectY.size(); i++) {
+                g2.fillRect(pm.left_x, pm.effectY.get(i), pm.WIDTH, Block.SIZE);
+            }
+            if (pm.lineEffectCounter >= 10) { // Reset the new counter
+                pm.effectCounterOn = false;
+                pm.lineEffectCounter = 0;
+                pm.effectY.clear();
+            }
+        }
+
+        int sx = pm.right_x + 100;
+        int sy = pm.bottom_y - 200;
+
+        int textX = sx + 20;
+        int textY = pm.top_y + 180;
+
+
+        if (pm.effectCounterOn) {
+            pm.lineEffectCounter++;
+            g2.setColor(ColorManager.getColor(Color.red));
+            for (int y1 : pm.effectY) {
+                g2.fillRect(pm.left_x, y1, pm.WIDTH, Block.SIZE);
+            }
+            if (pm.lineEffectCounter >= 10) {
+                pm.effectCounterOn = false;
+                pm.lineEffectCounter = 0;
+                pm.effectY.clear();
+            }
+        }
+
+        // 4. COMBO POPUP EFFECT
+        if (pm.comboEffectOn) {
             pm.comboEffectCounter++;
-            if(pm.comboEffectCounter > 60) {
+            
+            // Fade out over the last 20 frames
+            float alpha = 1.0f;
+            if (pm.comboEffectCounter > 40) {
+                alpha = 1.0f - ((pm.comboEffectCounter - 40) / 20.0f);
+            }
+            alpha = Math.max(0, Math.min(1, alpha));
+
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g2.setColor(Color.yellow);
+            g2.setFont(new Font("Comic Sans MS", Font.BOLD, 60));
+            
+            String comboText = pm.combo + " COMBO!";
+            int stringWidth = g2.getFontMetrics().stringWidth(comboText);
+            
+            // Subtle bounce animation
+            int bounce = (int)(Math.sin(pm.comboEffectCounter * 0.2) * 15);
+            
+            g2.drawString(comboText, pm.left_x + (pm.WIDTH/2) - (stringWidth/2), pm.top_y + (pm.HEIGHT/2) + bounce);
+            
+            // Reset composite
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+
+            if (pm.comboEffectCounter >= 60) {
                 pm.comboEffectOn = false;
                 pm.comboEffectCounter = 0;
             }

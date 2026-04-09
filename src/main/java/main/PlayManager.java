@@ -33,17 +33,21 @@ public class PlayManager {
     public int pauseMenuSelection = 0;
     public int confirmSelection = 0;
 
+    // Animation Flags & Counters
+    public boolean effectCounterOn = false;
+    public int lineEffectCounter = 0;
+    public ArrayList<Integer> effectY = new ArrayList<>();
+    public int combo = 0;
+    public boolean comboEffectOn = false;
+    public int comboEffectCounter = 0;
+    public final long COMBO_TIMEOUT = 3000; 
+    public long lastLinesClearedTime = 0;
+
+
     // Scoring & Stats
     public int level = 1;
     public int lines = 0;
     public int score = 0;
-    public int combo = 0;
-    public boolean comboEffectOn = false;
-    public int comboEffectCounter = 0;
-    public long lastLinesClearedTime = 0;
-    public final long COMBO_TIMEOUT = 2000;
-    public boolean effectCounterOn = false;
-    public ArrayList<Integer> effectY = new ArrayList<>();
 
     // Music & Settings
     public boolean isMuted = false;
@@ -76,6 +80,7 @@ public class PlayManager {
 
         MINO_START_X = left_x + (WIDTH / 2) - Block.SIZE;
         MINO_START_Y = top_y + Block.SIZE;
+        
         NEXTMINO_X = right_x + 175;
         NEXTMINO_Y = top_y + 500;
 
@@ -91,6 +96,8 @@ public class PlayManager {
         exitMiniGameManager = new ExitMiniGameManager(this);
         deleteAccountConfirmManager = new DeleteAccountConfirmManager(this);
         loginManager = new LoginManager(this); // Initialized
+        gameManager = new GameManager(this);
+        menuManager = new MenuManager(this);
     }
 
     /**

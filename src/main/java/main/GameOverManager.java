@@ -48,7 +48,6 @@ public class GameOverManager {
     }
 
     public void draw(Graphics2D g2) {
-        GameRenderer.drawGame(pm, g2);
 
         g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
