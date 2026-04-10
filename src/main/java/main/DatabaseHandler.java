@@ -18,7 +18,7 @@ import static com.mongodb.client.model.Sorts.descending;
 
 public class DatabaseHandler {
 
-    private MongoCollection<Document> scoreCollection;
+    public MongoCollection<Document> scoreCollection;
 
     /**
      * funkcija connect pieņem void tipa vērtību null un atgriež void tipa vērtību null.
@@ -70,6 +70,22 @@ public class DatabaseHandler {
             scoreCollection.updateOne(eq("username", username), inc("gameCount", 1));
         } catch (Exception e) {
             System.err.println("Error incrementing game count: " + e.getMessage());
+        }
+    }
+
+    public int getUserRank(String username, String sortBy) {
+        if (scoreCollection == null || username.equalsIgnoreCase("Guest")) return 0;
+        
+        try {
+            Document userDoc = scoreCollection.find(eq("username", username)).first();
+            if (userDoc == null) return 0;
+
+            Object val = userDoc.get(sortBy);
+            // Count how many people have a higher value than the current user
+            long rank = scoreCollection.countDocuments(new org.bson.Document(sortBy, new org.bson.Document("$gt", val)));
+            return (int) rank + 1;
+        } catch (Exception e) {
+            return 0;
         }
     }
 
