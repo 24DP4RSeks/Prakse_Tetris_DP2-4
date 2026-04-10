@@ -4,6 +4,8 @@ package main.java.main;
 import javax.swing.JFrame;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main{
         public static JFrame window;
@@ -21,6 +23,7 @@ public class Main{
                 window.setResizable(true);
                 window.setUndecorated(false);
 
+                Logger.getLogger("org.mongodb.driver").setLevel(Level.SEVERE);
                 // Get graphics device for fullscreen
                 device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 

@@ -8,6 +8,14 @@ import org.bson.Document;
 import com.mongodb.client.FindIterable;
 import static com.mongodb.client.model.Sorts.descending;
 
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mongodb.client.model.Sorts.descending;
+
 public class DatabaseHandler {
 
     private MongoCollection<Document> scoreCollection;
@@ -34,6 +42,8 @@ public class DatabaseHandler {
         }
     }
 
+    
+
     /**
      * funkcija registerPlayer pieņem String tipa vērtību user un String tipa vērtību pass un atgriež void tipa vērtību null.
      * Šī funkcija reģistrē jaunu lietotāju MongoDB kolekcijā, ja lietotājs vēl nepastāv.
@@ -48,6 +58,17 @@ public class DatabaseHandler {
                                 .append("highScore", 0);
             scoreCollection.insertOne(newPlayer);
             System.out.println("Player registered: " + user);
+        }
+    }
+
+    public void incrementGameCount(String username) {
+        if (scoreCollection == null || username == null || username.equalsIgnoreCase("Guest")) return;
+        
+        try {
+            // Using the inc update operator
+            scoreCollection.updateOne(eq("username", username), inc("gameCount", 1));
+        } catch (Exception e) {
+            System.err.println("Error incrementing game count: " + e.getMessage());
         }
     }
 
@@ -67,35 +88,28 @@ public class DatabaseHandler {
      * funkcija updateIfHighScore pieņem String tipa vērtību user un int tipa vērtību newScore un atgriež void tipa vērtību null.
      * Šī funkcija atjaunina spēlētāja rekordpunktu, ja jauns rezultāts ir lielāks par pašreizējo.
      */
-    public void updateIfHighScore(String user, int newScore) {
-        // Guard against null connection or empty user
-        if (scoreCollection == null || user == null || user.isEmpty()) {
-            System.err.println("Cannot update score: DB not ready or user empty.");
-            return;
-        }
-
-        try {
-            Document query = new Document("username", user);
-            Document player = scoreCollection.find(query).first();
-
-            if (player != null) {
-                // RULE: Use Number class for safe casting between Integer/Long
-                Object scoreObj = player.get("highScore");
-                int currentHighScore = 0;
-                
-                if (scoreObj instanceof Number) {
-                    currentHighScore = ((Number) scoreObj).intValue();
-                }
-
-                if (newScore > currentHighScore) {
-                    scoreCollection.updateOne(query, new Document("$set", new Document("highScore", newScore)));
-                    System.out.println("DB Updated: " + user + " reached " + newScore);
-                }
+    public void saveScore(String user, int score) {
+    if (scoreCollection == null || user == null || user.equalsIgnoreCase("Guest")) return;
+    
+    try {
+        Document found = scoreCollection.find(eq("username", user)).first();
+        if (found != null) {
+            // Change "score" to "highScore"
+            int oldScore = found.getInteger("highScore", 0); 
+            if (score > oldScore) {
+                // Change "score" to "highScore"
+                scoreCollection.updateOne(eq("username", user), set("highScore", score));
             }
-        } catch (Exception e) {
-            System.err.println("Error updating high score: " + e.getMessage());
+        } else {
+            Document newPlayer = new Document("username", user)
+                    .append("highScore", score) // Change "score" to "highScore"
+                    .append("gameCount", 1);
+            scoreCollection.insertOne(newPlayer);
         }
+    } catch (Exception e) {
+        System.err.println("Error saving score: " + e.getMessage());
     }
+}
 
     private java.util.List<String> cachedTopPlayers = new java.util.ArrayList<>();
     private long lastLeaderboardFetchTime = 0;
@@ -104,32 +118,30 @@ public class DatabaseHandler {
      * funkcija getTopPlayers pieņem int tipa vērtību limit un atgriež java.util.List<String> tipa vērtību topList.
      * Šī funkcija atgriež labāko spēlētāju sarakstu un kešē to uz vienu sekundi.
      */
-    public java.util.List<String> getTopPlayers(int limit) {
-        // Cache the leaderboard for 1 second to avoid repeated DB roundtrips each frame
-        long now = System.currentTimeMillis();
-        if (scoreCollection != null && now - lastLeaderboardFetchTime < 1000 && !cachedTopPlayers.isEmpty()) {
-            return new java.util.ArrayList<>(cachedTopPlayers);
+    public List<Document> getLeaderboard(String nameFilter) {
+    List<Document> list = new ArrayList<>();
+    if (scoreCollection == null) return list;
+
+    try {
+        FindIterable<Document> iterable;
+        // CHANGE "score" TO "highScore" BELOW
+        if (nameFilter == null || nameFilter.trim().isEmpty()) {
+            iterable = scoreCollection.find().sort(descending("highScore")).limit(10);
+        } else {
+            iterable = scoreCollection.find(regex("username", "^" + nameFilter, "i"))
+                                     .sort(descending("highScore"))
+                                     .limit(10);
         }
 
-        java.util.List<String> topList = new java.util.ArrayList<>();
-        if (scoreCollection == null) return topList;
-
-        FindIterable<Document> topPlayers = scoreCollection.find().sort(descending("highScore")).limit(limit);
-        for (Document doc : topPlayers) {
-            String name = doc.getString("username");
-            Object score = doc.get("highScore");
-            topList.add(String.format("%s - %s", name, score));
+        for (Document doc : iterable) {
+            list.add(doc);
         }
-
-        cachedTopPlayers = new java.util.ArrayList<>(topList);
-        lastLeaderboardFetchTime = now;
-        return topList;
+    } catch (Exception e) {
+        System.err.println("Error fetching leaderboard: " + e.getMessage());
     }
+    return list;
+}
 
-    /**
-     * funkcija showLeaderboard pieņem void tipa vērtību null un atgriež void tipa vērtību null.
-     * Šī funkcija izvada konsolē top 10 spēlētāju sarakstu.
-     */
     /**
      * funkcija deleteAccount pieņem String tipa vērtību user un atgriež void tipa vērtību null.
      * Šī funkcija izdzēš lietotāja kontu no MongoDB kolekcijas.
@@ -160,4 +172,6 @@ public class DatabaseHandler {
             System.out.println(doc.getString("username") + ": " + doc.get("highScore"));
         }
     }
+
+    
 }

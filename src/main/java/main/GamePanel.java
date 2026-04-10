@@ -33,6 +33,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(new KeyHandler());
         this.setFocusable(true);
         pm = new PlayManager();
+        this.setFocusTraversalKeysEnabled(false);
 
     }
     /**
@@ -82,31 +83,32 @@ public class GamePanel extends JPanel implements Runnable {
      * Šī funkcija apstrādā globālās komandas un izsauc PlayManager atjauninājumu.
      */
     private void update() {
-        // GLOBAL ESCAPE HANDLING
-        if(KeyHandler.menuPressed && pm.gameState != GameState.LOGIN && pm.gameState != GameState.REGISTER) {
-            pm.gameState = GameState.MENU;
-            pm.menuSelection = 0;
-            KeyHandler.menuPressed = false;
-            return;
-        }
-        
-        // UPDATED: Added LOGIN and REGISTER to the list of allowed updates
-        if(pm.gameState == GameState.MENU || 
-           pm.gameState == GameState.SETTINGS || 
-           pm.gameState == GameState.PLAYING || 
-           pm.gameState == GameState.GAME_OVER || 
-           pm.gameState == GameState.EXIT_MINI_GAME ||
-           pm.gameState == GameState.DELETE_ACCOUNT_CONFIRM ||
-           pm.gameState == GameState.LOGIN || 
-           pm.gameState == GameState.REGISTER) {
-            pm.update();
-        }
-
-        if(KeyHandler.fullscreenPressed) {
-            Main.toggleFullscreen();
-            KeyHandler.fullscreenPressed = false;
-        }
+    // GLOBAL ESCAPE HANDLING
+    if(KeyHandler.menuPressed && pm.gameState != GameState.LOGIN && pm.gameState != GameState.REGISTER) {
+        pm.gameState = GameState.MENU;
+        pm.menuSelection = 0;
+        KeyHandler.menuPressed = false;
+        return;
     }
+    
+    // ADD GameState.LEADERBOARD TO THIS LIST
+    if(pm.gameState == GameState.MENU || 
+       pm.gameState == GameState.SETTINGS || 
+       pm.gameState == GameState.PLAYING || 
+       pm.gameState == GameState.GAME_OVER || 
+       pm.gameState == GameState.EXIT_MINI_GAME ||
+       pm.gameState == GameState.DELETE_ACCOUNT_CONFIRM ||
+       pm.gameState == GameState.LOGIN || 
+       pm.gameState == GameState.REGISTER ||
+       pm.gameState == GameState.LEADERBOARD) { 
+        pm.update();
+    }
+
+    if(KeyHandler.fullscreenPressed) {
+        Main.toggleFullscreen();
+        KeyHandler.fullscreenPressed = false;
+    }
+}
 
     /**
      * funkcija paintComponent pieņem Graphics tipa vērtību g un atgriež void tipa vērtību null.

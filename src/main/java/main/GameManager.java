@@ -301,30 +301,38 @@ public class GameManager {
     }
 
     private void drawLeaderboard(Graphics2D g2) {
-        java.util.List<String> topPlayers = (pm.db != null) ? pm.db.getTopPlayers(10) : java.util.Collections.emptyList();
+    // 1. Change to List<Document> and call getLeaderboard instead of getTopPlayers
+    java.util.List<org.bson.Document> topPlayers = (pm.db != null) ? pm.db.getLeaderboard("") : java.util.Collections.emptyList();
 
-        int boxX = 20;
-        int boxY = pm.top_y;
-        int boxW = 240;
-        int boxH = 340;
+    int boxX = 20;
+    int boxY = pm.top_y;
+    int boxW = 240;
+    int boxH = 340;
 
-        g2.setColor(new Color(0, 0, 0, 170));
-        g2.fillRect(boxX, boxY, boxW, boxH);
+    g2.setColor(new Color(0, 0, 0, 170));
+    g2.fillRect(boxX, boxY, boxW, boxH);
 
-        g2.setColor(ColorManager.getColor(Color.white));
-        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
-        g2.drawString("TOP 10 LEADERBOARD", boxX + 10, boxY + 30);
+    g2.setColor(ColorManager.getColor(Color.white));
+    g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
+    g2.drawString("TOP 10", boxX + 10, boxY + 30); // Shortened to fit box width
 
-        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
-        for (int i = 0; i < Math.min(topPlayers.size(), 10); i++) {
-            g2.drawString((i + 1) + ". " + topPlayers.get(i), boxX + 10, boxY + 60 + (i * 22));
-        }
-
-        if (topPlayers.isEmpty()) {
-            g2.setColor(ColorManager.getColor(Color.gray));
-            g2.drawString("No data yet", boxX + 10, boxY + 60);
-        }
+    g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+    for (int i = 0; i < Math.min(topPlayers.size(), 10); i++) {
+        org.bson.Document doc = topPlayers.get(i);
+        
+        // 2. Get the username and the highScore (since your DB uses "highScore")
+        String name = doc.getString("username");
+        Object score = doc.get("highScore") != null ? doc.get("highScore") : 0;
+        
+        // 3. Draw both name and score
+        g2.drawString((i + 1) + ". " + name + ": " + score, boxX + 10, boxY + 60 + (i * 22));
     }
+
+    if (topPlayers.isEmpty()) {
+        g2.setColor(ColorManager.getColor(Color.gray));
+        g2.drawString("No data yet", boxX + 10, boxY + 60);
+    }
+}
 
     private void drawPauseMenu(Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 150));

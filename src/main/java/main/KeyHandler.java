@@ -14,6 +14,7 @@ public class KeyHandler implements KeyListener{
     public static boolean fullscreenPressed;
     public static boolean restartPressed;
     public static boolean ePressed;
+    public static boolean searchPressed;
     
     public static char lastTypedChar = Character.MIN_VALUE;
 
@@ -40,7 +41,14 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_ENTER) ePressed = true;
         if(code == KeyEvent.VK_F11) fullscreenPressed = true;
         if(code == KeyEvent.VK_SPACE) spacePressed = true;
-        if(code == KeyEvent.VK_ESCAPE) pausePressed = !pausePressed;
+        if(code == KeyEvent.VK_TAB) searchPressed = true;
+        if(code == KeyEvent.VK_ESCAPE) {
+            if(PlayManager.gameState == GameState.LEADERBOARD) {
+                menuPressed = true; // Use this to exit the leaderboard
+            } else {
+                pausePressed = !pausePressed; 
+            }
+        }
         if(code == KeyEvent.VK_R) restartPressed = true;
     }
 
@@ -60,6 +68,7 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_P) pausePressed = false;
         if(code == KeyEvent.VK_F11) fullscreenPressed = false;
         if(code == KeyEvent.VK_R) restartPressed = false;
+        if(code == KeyEvent.VK_TAB) searchPressed = false;
     }
 
 }

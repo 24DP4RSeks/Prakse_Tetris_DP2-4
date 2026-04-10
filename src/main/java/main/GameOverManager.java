@@ -15,7 +15,7 @@ public class GameOverManager {
         // Update high score once after game over
         if (pm.gameOver && !scoreUpdated) {
             if (!pm.isGuest && pm.db != null) {
-                pm.db.updateIfHighScore(pm.currentUsername, pm.score);
+                pm.db.saveScore(pm.currentUsername, pm.score);
             }
             scoreUpdated = true;
         }

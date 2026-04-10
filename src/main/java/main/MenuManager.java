@@ -13,9 +13,9 @@ public class MenuManager {
 
     private String[] getOptions() {
         if (!pm.isGuest && ap_hasLoggedInUser(pm.currentUsername)) {
-            return new String[] {"PLAY", "LOGOUT", "DELETE ACCOUNT", "SETTINGS", "EXIT"};
+            return new String[] {"PLAY", "LEADERBOARD", "LOGOUT", "DELETE ACCOUNT", "SETTINGS", "EXIT"};
         }
-        return new String[] {"REGISTER", "LOGIN", "GUEST PLAY", "SETTINGS", "EXIT"};
+        return new String[] {"REGISTER", "LOGIN", "GUEST PLAY", "LEADERBOARD", "SETTINGS", "EXIT"};
     }
 
     private boolean ap_hasLoggedInUser(String username) {
@@ -40,41 +40,44 @@ public class MenuManager {
 
         if(KeyHandler.ePressed || KeyHandler.spacePressed) {
             String selected = options[pm.menuSelection];
-            switch(selected) {
+
+            // Use the String value to decide what to do
+            switch (selected) {
+                case "PLAY":
+                case "GUEST PLAY":
+                    if (selected.equals("GUEST PLAY")) {
+                        pm.isGuest = true;
+                        pm.currentUsername = "Guest";
+                    }
+                    pm.startGame();
+                    break;
                 case "REGISTER":
                     pm.gameState = GameState.REGISTER;
-                    pm.loginManager.reset();
                     break;
                 case "LOGIN":
                     pm.gameState = GameState.LOGIN;
-                    pm.loginManager.reset();
                     break;
-                case "GUEST PLAY":
-                    pm.isGuest = true;
-                    pm.currentUsername = "Guest";
-                    pm.startGame();
-                    break;
-                case "PLAY":
-                    pm.startGame();
-                    break;
-                case "LOGOUT":
-                    pm.isGuest = true;
-                    pm.currentUsername = "Guest";
-                    pm.gameState = GameState.MENU;
-                    pm.menuSelection = 0;
-                    break;
-                case "DELETE ACCOUNT":
-                    pm.confirmSelection = 0;
-                    pm.gameState = GameState.DELETE_ACCOUNT_CONFIRM;
+                case "LEADERBOARD":
+                    pm.gameState = GameState.LEADERBOARD;
                     break;
                 case "SETTINGS":
                     pm.gameState = GameState.SETTINGS;
                     pm.settingsSelection = 0;
                     break;
+                case "LOGOUT":
+                    pm.isGuest = false;
+                    pm.currentUsername = "";
+                    pm.menuSelection = 0;
+                    break;
+                case "DELETE ACCOUNT":
+                    pm.gameState = GameState.DELETE_ACCOUNT_CONFIRM;
+                    pm.confirmSelection = 0;
+                    break;
                 case "EXIT":
                     System.exit(0);
                     break;
             }
+            
             KeyHandler.ePressed = false;
             KeyHandler.spacePressed = false;
         }

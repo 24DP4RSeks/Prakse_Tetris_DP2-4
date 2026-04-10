@@ -27,7 +27,6 @@ public class PlayManager {
     public static int dropInterval = 60; 
     public boolean gameOver;
     public boolean isPaused = false;
-    public GameState gameState = GameState.MENU;
     public int menuSelection = 0; 
     public int settingsSelection = 0; 
     public int pauseMenuSelection = 0;
@@ -58,53 +57,76 @@ public class PlayManager {
     public String currentUsername = "Guest";
     public boolean isGuest = true;
     public DatabaseHandler db;
+
+    private boolean statsRecorded = false; 
     
     // Managers
     public MenuManager menuManager;
     public SettingsManager settingsManager;
     public GameManager gameManager;
     public GameOverManager gameOverManager;
+    public LeaderboardManager LeaderboardManager;
     public ExitMiniGameManager exitMiniGameManager;
     public DeleteAccountConfirmManager deleteAccountConfirmManager;
     public LoginManager loginManager; // Added this
+    public static GameState gameState = GameState.MENU;
+    
+    
 
     /**
      * funkcija PlayManager pieņem void tipa vērtību null un atgriež void tipa vērtību null.
      * Šī konstruktorfunkcija inicializē spēles laukumu, datu bāzes savienojumu un pārvaldniekus.
      */
     public PlayManager() {
-        left_x = (GamePanel.WIDTH - WIDTH) / 2;
-        right_x = left_x + WIDTH;
-        top_y = (GamePanel.HEIGHT - HEIGHT) / 2;
-        bottom_y = top_y + HEIGHT;
+    left_x = (GamePanel.WIDTH - WIDTH) / 2;
+    right_x = left_x + WIDTH;
+    top_y = (GamePanel.HEIGHT - HEIGHT) / 2;
+    bottom_y = top_y + HEIGHT;
 
-        MINO_START_X = left_x + (WIDTH / 2) - Block.SIZE;
-        MINO_START_Y = top_y + Block.SIZE;
-        
-        NEXTMINO_X = right_x + 175;
-        NEXTMINO_Y = top_y + 500;
-
-        // 1. Initialize Database First
-        db = new DatabaseHandler();
-        db.connect();
-
-        // 2. Initialize Managers (LoginManager must be before MenuManager if menu calls it)
-        menuManager = new MenuManager(this);
-        settingsManager = new SettingsManager(this);
-        gameManager = new GameManager(this);
-        gameOverManager = new GameOverManager(this);
-        exitMiniGameManager = new ExitMiniGameManager(this);
-        deleteAccountConfirmManager = new DeleteAccountConfirmManager(this);
-        loginManager = new LoginManager(this); // Initialized
-        gameManager = new GameManager(this);
-        menuManager = new MenuManager(this);
+    // 1. Initialize LoginManager first
+    this.loginManager = new LoginManager(this);
+    
+    // 2. Get the DB and connect
+    this.db = loginManager.getDb(); 
+    if (this.db != null) {
+        this.db.connect();
     }
+
+    // 3. Initialize LeaderboardManager with the connected DB
+    this.LeaderboardManager = new LeaderboardManager(this, this.db);
+
+    // 4. Initialize the rest (ONLY ONCE)
+    gameManager = new GameManager(this);
+    menuManager = new MenuManager(this);
+    settingsManager = new SettingsManager(this);
+    gameOverManager = new GameOverManager(this);
+    exitMiniGameManager = new ExitMiniGameManager(this);
+    deleteAccountConfirmManager = new DeleteAccountConfirmManager(this);
+
+    MINO_START_X = left_x + (WIDTH / 2) - Block.SIZE;
+    MINO_START_Y = top_y + Block.SIZE;
+    
+    NEXTMINO_X = right_x + 175;
+    NEXTMINO_Y = top_y + 500;
+
+    GameResetManager.resetGame(this);
+}
 
     /**
      * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
      * Šī funkcija vada spēles stāvokļa atkārtotu atjaunošanu (menu, settings, playing utt.).
      */
     public void update() {
+        if (gameOver && !statsRecorded) {
+            loginManager.getDb().incrementGameCount(currentUsername);
+            statsRecorded = true;
+        }
+        
+        // Reset the flag when starting a new game
+        if (!gameOver && statsRecorded) {
+            statsRecorded = false;
+        }
+
         switch(gameState) {
             case MENU: menuManager.update(); break;
             case SETTINGS: settingsManager.update(); break;
@@ -113,7 +135,8 @@ public class PlayManager {
             case EXIT_MINI_GAME: exitMiniGameManager.update(); break;
             case DELETE_ACCOUNT_CONFIRM: deleteAccountConfirmManager.update(); break;
             case LOGIN:
-            case REGISTER: loginManager.update(); break; // Added routing
+            case REGISTER: loginManager.update(); break;
+            case LEADERBOARD: LeaderboardManager.update(); break;
         }
     }
 
@@ -139,7 +162,8 @@ public class PlayManager {
             case EXIT_MINI_GAME: exitMiniGameManager.draw(g2); break;
             case DELETE_ACCOUNT_CONFIRM: deleteAccountConfirmManager.draw(g2); break;
             case LOGIN:
-            case REGISTER: loginManager.draw(g2); break; // Added routing
+            case REGISTER: loginManager.draw(g2); break;
+            case LEADERBOARD: LeaderboardManager.draw(g2); break;
         }
     }
 
