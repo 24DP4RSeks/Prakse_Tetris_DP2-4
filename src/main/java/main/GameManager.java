@@ -309,80 +309,76 @@ public class GameManager {
     }
 
     private void drawLeaderboard(Graphics2D g2) {
-        // 1. CHANGE: Use getLeaderboard instead of getTopPlayers to get full Documents
-        // Use "" for no filter, and pm.currentSortMode (created in step 2)
-        java.util.List<org.bson.Document> topPlayers = (pm.db != null) ? 
-            pm.db.getLeaderboard("", pm.currentSortMode) : java.util.Collections.emptyList();
+    // --- 1. DATA ACQUISITION (CLEAN & FAST) ---
+    // We only read from the variables in PlayManager. No internet requests here!
+    java.util.List<org.bson.Document> topPlayers = pm.cachedTopPlayers;
+    
+    int boxX = 20;
+    int boxY = pm.top_y;
+    int boxW = 320; 
+    int boxH = 340;
 
-        int boxX = 20;
-        int boxY = pm.top_y;
-        int boxW = 320; // Widened slightly to fit both stats
-        int boxH = 340;
+    // --- 2. DRAW MAIN BOX ---
+    g2.setColor(new Color(0, 0, 0, 170));
+    g2.fillRect(boxX, boxY, boxW, boxH);
 
-        g2.setColor(new Color(0, 0, 0, 170));
-        g2.fillRect(boxX, boxY, boxW, boxH);
+    // --- 3. DRAW TITLE ---
+    g2.setColor(ColorManager.getColor(Color.white));
+    g2.setFont(new Font("Comic Sans MS", Font.BOLD, 22));
+    String title = pm.currentSortMode.equals("highScore") ? "TOP SCORES" : "MOST GAMES";
+    g2.drawString(title, boxX + 10, boxY + 30);
 
-        g2.setColor(ColorManager.getColor(Color.white));
-        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 22));
-        // Indicate what we are sorting by in the title
-        String title = pm.currentSortMode.equals("highScore") ? "TOP SCORES" : "MOST GAMES";
-        g2.drawString(title, boxX + 10, boxY + 30);
-
-        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+    // --- 4. DRAW TOP 10 LIST ---
+    if (topPlayers.isEmpty()) {
+        g2.setColor(ColorManager.getColor(Color.gray));
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        g2.drawString("Loading data...", boxX + 10, boxY + 60);
+    } else {
         for (int i = 0; i < Math.min(topPlayers.size(), 10); i++) {
-            g2.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
             org.bson.Document doc = topPlayers.get(i);
             String name = doc.getString("username");
             int score = doc.getInteger("highScore", 0);
             int games = doc.getInteger("gameCount", 0);
-
             int yPos = boxY + 60 + (i * 22);
             
             // Draw Name
             g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
             g2.drawString((i + 1) + ". " + name, boxX + 10, yPos);
+            
+            // Draw Stats (Yellow if currently sorted by this, Green if not)
             g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-            // Draw Stats (Highlight the one we are sorting by in Cyan)
+            
             g2.setColor(pm.currentSortMode.equals("highScore") ? Color.YELLOW : Color.GREEN);
-            g2.drawString("S: " + score, boxX + 120, yPos);
+            g2.drawString("S: " + score, boxX + 140, yPos);
             
             g2.setColor(pm.currentSortMode.equals("gameCount") ? Color.YELLOW : Color.GREEN);
-            g2.drawString("G: " + games, boxX + 200, yPos);
-        }
-
-        if (!pm.currentUsername.equalsIgnoreCase("Guest")) {
-            int myRank = pm.db.getUserRank(pm.currentUsername, pm.currentSortMode);
-            
-            // Draw a small separator line
-            g2.setColor(Color.GRAY);
-            g2.drawLine(boxX + 10, boxY + boxH - 45, boxX + boxW - 10, boxY + boxH - 45);
-
-            // Background for "Your Stats" to make it pop
-            g2.setColor(new Color(255, 255, 0, 40)); // Subtle yellow glow
-            g2.fillRect(boxX, boxY + boxH - 40, boxW, 40);
-
-            g2.setFont(new Font("Comic Sans MS", Font.BOLD, 15));
-            g2.setColor(Color.YELLOW);
-            
-            // Get your current live score/games from PlayManager (not just DB)
-            String myName = pm.currentUsername;
-            int myScore = pm.score; // Current game score
-            
-            // Find your saved gameCount from the DB if available
-            org.bson.Document myDoc = pm.db.scoreCollection.find(new org.bson.Document("username", myName)).first();
-            int myTotalGames = (myDoc != null) ? myDoc.getInteger("gameCount", 0) : 0;
-
-            String rankText = (myRank > 0) ? "#" + myRank : "Unranked";
-            g2.drawString(rankText + ". " + myName, boxX + 10, boxY + boxH - 15);
-            g2.drawString("S: " + myScore, boxX + 160, boxY + boxH - 15);
-            g2.drawString("G: " + myTotalGames, boxX + 240, boxY + boxH - 15);
-        }
-
-        if (topPlayers.isEmpty()) {
-            g2.setColor(ColorManager.getColor(Color.gray));
-            g2.drawString("No data yet", boxX + 10, boxY + 60);
+            g2.drawString("G: " + games, boxX + 220, yPos);
         }
     }
+
+    // --- 5. DRAW YOUR PERSONAL STATS (FAST CACHED VERSION) ---
+    if (!pm.currentUsername.equalsIgnoreCase("Guest")) {
+        // Separator line
+        g2.setColor(Color.GRAY);
+        g2.drawLine(boxX + 10, boxY + boxH - 45, boxX + boxW - 10, boxY + boxH - 45);
+
+        // Highlight background for you
+        g2.setColor(new Color(255, 255, 0, 40)); 
+        g2.fillRect(boxX, boxY + boxH - 40, boxW, 40);
+
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 15));
+        g2.setColor(Color.YELLOW);
+        
+        // We use the variables we calculated in the background thread in PlayManager
+        String rankText = (pm.myCachedRank > 0) ? "#" + pm.myCachedRank : "Searching...";
+        
+        g2.drawString(rankText + ". " + pm.currentUsername, boxX + 10, boxY + boxH - 15);
+        g2.drawString("S: " + pm.myCachedHighScore, boxX + 140, boxY + boxH - 15);
+        g2.drawString("G: " + pm.myCachedTotalGames, boxX + 230, boxY + boxH - 15);
+        
+    }
+}
 
     private void drawPauseMenu(Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 150));

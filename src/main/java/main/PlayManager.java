@@ -70,6 +70,14 @@ public class PlayManager {
     public DeleteAccountConfirmManager deleteAccountConfirmManager;
     public LoginManager loginManager; // Added this
     public static GameState gameState = GameState.MENU;
+    // Local cache for the leaderboard data
+    public java.util.List<org.bson.Document> cachedTopPlayers = new java.util.ArrayList<>();
+    public int myCachedRank = 0;
+    public int myCachedTotalGames = 0;
+    public int myCachedHighScore = 0;
+
+    private long lastFetchTime = 0;
+    private final long FETCH_INTERVAL = 5000; // Only update every 5 seconds
     
     
 
@@ -78,6 +86,8 @@ public class PlayManager {
      * Šī konstruktorfunkcija inicializē spēles laukumu, datu bāzes savienojumu un pārvaldniekus.
      */
     public PlayManager() {
+
+        
         left_x = (GamePanel.WIDTH - WIDTH) / 2;
         right_x = left_x + WIDTH;
         top_y = (GamePanel.HEIGHT - HEIGHT) / 2;
@@ -148,6 +158,36 @@ public class PlayManager {
             case LOGIN:
             case REGISTER: loginManager.update(); break;
             case LEADERBOARD: LeaderboardManager.update(); break;
+        }
+        if (gameState == GameState.PLAYING || gameState == GameState.LEADERBOARD) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastFetchTime > FETCH_INTERVAL) {
+                lastFetchTime = currentTime;
+                
+                // Run the database work on a separate thread so the game doesn't freeze
+                new Thread(() -> {
+                    if (db != null) {
+                        // Fetch data
+                        
+                        var freshList = db.getLeaderboard("", currentSortMode);
+                        int freshRank = db.getUserRank(currentUsername, currentSortMode);
+                        
+                        // Get my total games
+                        org.bson.Document myDoc = db.scoreCollection.find(new org.bson.Document("username", currentUsername)).first();
+                        int freshGames = (myDoc != null) ? myDoc.getInteger("gameCount", 0) : 0;
+
+                        if (myDoc != null) {
+                            // 2. Save the highScore from the DB into our local cache
+                            this.myCachedHighScore = myDoc.getInteger("highScore", 0);
+                            this.myCachedTotalGames = myDoc.getInteger("gameCount", 0);
+                        }
+                        // Update the cache (using a temporary list to avoid flickering)
+                        this.cachedTopPlayers = freshList;
+                        this.myCachedRank = freshRank;  
+                        this.myCachedTotalGames = freshGames;
+                    }
+                }).start();
+            }
         }
     }
 

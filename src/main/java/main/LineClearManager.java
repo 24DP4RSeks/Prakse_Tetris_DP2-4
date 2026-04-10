@@ -74,7 +74,7 @@ public class LineClearManager {
             // Clearing 4 lines (Tetris) gives a massive 4x multiplier on top of the base
             float comboMultiplier = (float)Math.pow(pm.combo, 1.5); 
             
-            int finalScore = (int)(lineScoreBase * levelMultiplier * comboMultiplier);
+            int finalScore = (int)(lineScoreBase * levelMultiplier * comboMultiplier * 0.4);
             pm.score += finalScore;
 
             // Trigger the "Showup Message" if 2 or more lines were cleared at once

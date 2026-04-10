@@ -74,20 +74,24 @@ public class DatabaseHandler {
     }
 
     public int getUserRank(String username, String sortBy) {
-        if (scoreCollection == null || username.equalsIgnoreCase("Guest")) return 0;
-        
-        try {
-            Document userDoc = scoreCollection.find(eq("username", username)).first();
-            if (userDoc == null) return 0;
+    if (scoreCollection == null || username.equalsIgnoreCase("Guest")) return 0;
+    
+    try {
+        // 1. First, find THIS specific player's record
+        Document userDoc = scoreCollection.find(new Document("username", username)).first();
+        if (userDoc == null) return 0;
 
-            Object val = userDoc.get(sortBy);
-            // Count how many people have a higher value than the current user
-            long rank = scoreCollection.countDocuments(new org.bson.Document(sortBy, new org.bson.Document("$gt", val)));
-            return (int) rank + 1;
-        } catch (Exception e) {
-            return 0;
-        }
+        // 2. Get their personal BEST value from the DB
+        Object myBest = userDoc.get(sortBy); 
+
+        // 3. Count how many players have a value STRICTLY GREATER than their best
+        long rank = scoreCollection.countDocuments(new Document(sortBy, new Document("$gt", myBest)));
+        
+        return (int) rank + 1;
+    } catch (Exception e) {
+        return 0;
     }
+}
 
     /**
      * funkcija login pieņem String tipa vērtību user un String tipa vērtību pass un atgriež boolean tipa vērtību.

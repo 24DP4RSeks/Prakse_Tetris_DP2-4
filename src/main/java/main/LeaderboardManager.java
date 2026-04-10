@@ -130,7 +130,8 @@ public class LeaderboardManager {
 
         // Footer
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
-        g2.setColor(ColorManager.getColor(Color.white));
-        g2.drawString("Press ESC to return to Menu", GamePanel.WIDTH / 2 - 130, GamePanel.HEIGHT - 5);
+        g2.setColor(ColorManager.getColor(Color.GRAY));
+        g2.drawString("Press ESC to return to Menu", GamePanel.WIDTH / 2 - 130, GamePanel.HEIGHT - 35);
+        g2.drawString("Press SPACE to change filter", GamePanel.WIDTH / 2 - 130, GamePanel.HEIGHT - 5);
     }
 }
