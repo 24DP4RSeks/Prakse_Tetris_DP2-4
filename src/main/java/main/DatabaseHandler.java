@@ -55,7 +55,8 @@ public class DatabaseHandler {
         if (existing == null) {
             Document newPlayer = new Document("username", user)
                                 .append("password", pass)
-                                .append("highScore", 0);
+                                .append("highScore", 0)
+                                .append("gameCount", 0);
             scoreCollection.insertOne(newPlayer);
             System.out.println("Player registered: " + user);
         }
@@ -114,23 +115,26 @@ public class DatabaseHandler {
     private java.util.List<String> cachedTopPlayers = new java.util.ArrayList<>();
     private long lastLeaderboardFetchTime = 0;
 
+    
+
     /**
      * funkcija getTopPlayers pieņem int tipa vērtību limit un atgriež java.util.List<String> tipa vērtību topList.
      * Šī funkcija atgriež labāko spēlētāju sarakstu un kešē to uz vienu sekundi.
      */
-    public List<Document> getLeaderboard(String nameFilter) {
+    public List<Document> getLeaderboard(String nameFilter, String sortBy) { // Added sortBy
     List<Document> list = new ArrayList<>();
     if (scoreCollection == null) return list;
 
     try {
         FindIterable<Document> iterable;
-        // CHANGE "score" TO "highScore" BELOW
+        // Default to highScore if sortBy is null
+        String field = (sortBy == null || sortBy.isEmpty()) ? "highScore" : sortBy;
+
         if (nameFilter == null || nameFilter.trim().isEmpty()) {
-            iterable = scoreCollection.find().sort(descending("highScore")).limit(10);
+            iterable = scoreCollection.find().sort(descending(field)).limit(10);
         } else {
             iterable = scoreCollection.find(regex("username", "^" + nameFilter, "i"))
-                                     .sort(descending("highScore"))
-                                     .limit(10);
+                                     .sort(descending(field)).limit(10);
         }
 
         for (Document doc : iterable) {

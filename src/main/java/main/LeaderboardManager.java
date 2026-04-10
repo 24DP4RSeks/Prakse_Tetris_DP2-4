@@ -12,6 +12,7 @@ public class LeaderboardManager {
     private boolean isSearching = false;
     private long lastFetchTime = 0;
     private final long FETCH_COOLDOWN = 5000; // 5 seconds cache
+    private String sortMode = "highScore"; // Default mode
 
     public LeaderboardManager(PlayManager pm, DatabaseHandler db) {
         this.pm = pm;
@@ -20,14 +21,12 @@ public class LeaderboardManager {
     }
 
     public void refreshLeaderboard() {
-    // Add a null check for the DB
     if (db != null) {
-        this.topPlayers = db.getLeaderboard(searchFilter);
-    } else {
-        System.err.println("Leaderboard Error: DatabaseHandler is null");
+        // Pass the sortMode to the database
+        this.topPlayers = db.getLeaderboard(searchFilter, sortMode);
     }
     this.lastFetchTime = System.currentTimeMillis();
-    }
+}
 
     public void update() {
         if (KeyHandler.menuPressed) {
@@ -42,6 +41,12 @@ public class LeaderboardManager {
             KeyHandler.searchPressed = false; // Reset the flag
             KeyHandler.lastTypedChar = Character.MIN_VALUE; // Clear buffer
             if (!isSearching) refreshLeaderboard();
+        }
+
+        if (KeyHandler.spacePressed) {
+            sortMode = sortMode.equals("highScore") ? "gameCount" : "highScore";
+            refreshLeaderboard();
+            KeyHandler.spacePressed = false; // Prevent rapid flickering
         }
 
         if (isSearching) {
@@ -97,37 +102,31 @@ public class LeaderboardManager {
 
         // Draw Table Headers
         int startY = 220;
-        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
-        g2.setColor(ColorManager.getColor(Color.cyan));
-        g2.drawString("Rank", GamePanel.WIDTH / 2 - 250, startY);
-        g2.drawString("Player", GamePanel.WIDTH / 2 - 100, startY);
-        g2.drawString("Score", GamePanel.WIDTH / 2 + 150, startY);
+        g2.setFont(new Font("Comic Sans MS", Font.BOLD, 25));
+        g2.setColor(Color.CYAN);
+        g2.drawString("Rank/Player", GamePanel.WIDTH / 2 - 250, startY);
+        g2.drawString("Score", GamePanel.WIDTH / 2 + 50, startY);
+        g2.drawString("Games", GamePanel.WIDTH / 2 + 180, startY);
 
         // Draw Player List
-        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 25));
-        if (topPlayers == null || topPlayers.isEmpty()) {
-            g2.setColor(ColorManager.getColor(Color.red));
-            g2.drawString("No players found...", GamePanel.WIDTH / 2 - 100, startY + 100);
-        } else {
-            for (int i = 0; i < topPlayers.size(); i++) {
-                Document doc = topPlayers.get(i);
-                int y = startY + 50 + (i * 45);
-                
-                // Highlight current user
-                if (doc.getString("username").equalsIgnoreCase(pm.currentUsername)) {
-                    g2.setColor(ColorManager.getColor(Color.yellow));
-                } else {
-                    g2.setColor(ColorManager.getColor(Color.white));
-                }
+        g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 22));
+    if (topPlayers != null) {
+        for (int i = 0; i < topPlayers.size(); i++) {
+            Document doc = topPlayers.get(i);
+            int y = startY + 40 + (i * 40);
 
-                g2.drawString("#" + (i + 1), GamePanel.WIDTH / 2 - 240, y);
-                g2.drawString(doc.getString("username"), GamePanel.WIDTH / 2 - 100, y);
-                
-                // Get score (handle both "score" and "highScore" keys from your DB class)
-                Object scoreObj = doc.get("score") != null ? doc.get("score") : doc.get("highScore");
-                g2.drawString(String.valueOf(scoreObj), GamePanel.WIDTH / 2 + 150, y);
-            }
+            // Highlight sorting column
+            g2.setColor(sortMode.equals("highScore") ? Color.YELLOW : Color.WHITE);
+            g2.drawString(String.valueOf(doc.get("highScore")), GamePanel.WIDTH / 2 + 50, y);
+
+            g2.setColor(sortMode.equals("gameCount") ? Color.YELLOW : Color.WHITE);
+            g2.drawString(String.valueOf(doc.get("gameCount")), GamePanel.WIDTH / 2 + 180, y);
+
+            // Draw Name
+            g2.setColor(Color.WHITE);
+            g2.drawString((i + 1) + ". " + doc.getString("username"), GamePanel.WIDTH / 2 - 250, y);
         }
+    }
 
         // Footer
         g2.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));

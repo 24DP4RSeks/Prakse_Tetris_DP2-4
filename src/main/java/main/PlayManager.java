@@ -78,39 +78,50 @@ public class PlayManager {
      * Šī konstruktorfunkcija inicializē spēles laukumu, datu bāzes savienojumu un pārvaldniekus.
      */
     public PlayManager() {
-    left_x = (GamePanel.WIDTH - WIDTH) / 2;
-    right_x = left_x + WIDTH;
-    top_y = (GamePanel.HEIGHT - HEIGHT) / 2;
-    bottom_y = top_y + HEIGHT;
+        left_x = (GamePanel.WIDTH - WIDTH) / 2;
+        right_x = left_x + WIDTH;
+        top_y = (GamePanel.HEIGHT - HEIGHT) / 2;
+        bottom_y = top_y + HEIGHT;
 
-    // 1. Initialize LoginManager first
-    this.loginManager = new LoginManager(this);
-    
-    // 2. Get the DB and connect
-    this.db = loginManager.getDb(); 
-    if (this.db != null) {
-        this.db.connect();
+        // 1. Initialize LoginManager first
+        this.loginManager = new LoginManager(this);
+        
+        // 2. Get the DB and connect
+        this.db = loginManager.getDb(); 
+        if (this.db != null) {
+            this.db.connect();
+        }
+
+        // 3. Initialize LeaderboardManager with the connected DB
+        this.LeaderboardManager = new LeaderboardManager(this, this.db);
+
+        // 4. Initialize the rest (ONLY ONCE)
+        gameManager = new GameManager(this);
+        menuManager = new MenuManager(this);
+        settingsManager = new SettingsManager(this);
+        gameOverManager = new GameOverManager(this);
+        exitMiniGameManager = new ExitMiniGameManager(this);
+        deleteAccountConfirmManager = new DeleteAccountConfirmManager(this);
+
+        MINO_START_X = left_x + (WIDTH / 2) - Block.SIZE;
+        MINO_START_Y = top_y + Block.SIZE;
+        
+        NEXTMINO_X = right_x + 175;
+        NEXTMINO_Y = top_y + 500;
+
+        GameResetManager.resetGame(this);
     }
 
-    // 3. Initialize LeaderboardManager with the connected DB
-    this.LeaderboardManager = new LeaderboardManager(this, this.db);
+    // Inside PlayManager class
+    public String currentSortMode = "highScore"; // Default
 
-    // 4. Initialize the rest (ONLY ONCE)
-    gameManager = new GameManager(this);
-    menuManager = new MenuManager(this);
-    settingsManager = new SettingsManager(this);
-    gameOverManager = new GameOverManager(this);
-    exitMiniGameManager = new ExitMiniGameManager(this);
-    deleteAccountConfirmManager = new DeleteAccountConfirmManager(this);
-
-    MINO_START_X = left_x + (WIDTH / 2) - Block.SIZE;
-    MINO_START_Y = top_y + Block.SIZE;
-    
-    NEXTMINO_X = right_x + 175;
-    NEXTMINO_Y = top_y + 500;
-
-    GameResetManager.resetGame(this);
-}
+    public void toggleSortMode() {
+        if (currentSortMode.equals("highScore")) {
+            currentSortMode = "gameCount";
+        } else {
+            currentSortMode = "highScore";
+        }
+    }
 
     /**
      * funkcija update pieņem void tipa vērtību null un atgriež void tipa vērtību null.
